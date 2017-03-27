@@ -1,0 +1,265 @@
+package com.example.ultim.radio5.Radio;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.wifi.WifiManager;
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.support.v7.app.NotificationCompat;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.example.ultim.radio5.AppConstant;
+import com.example.ultim.radio5.MainActivity;
+import com.example.ultim.radio5.R;
+
+import java.io.IOException;
+
+public class RadioService extends Service implements  MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
+     ConnectivityReceiver.ConnectivityReceiverListener, MusicFocusable, NotificationRadioReceiver.NotificationRadioReceiverListener {
+
+    private static final String TAG = "RADIO";
+    public static final float DUCK_VOLUME = 0.1f;
+    private int NOTIFICATION = 1; // Unique identifier for our notification
+    public static boolean isRunning = false;
+    public static AppConstant.StateRadio status = AppConstant.StateRadio.Stop;
+    private NotificationManager notificationManager = null;
+    MediaPlayer player;
+    private WifiManager.WifiLock mWifiLock;
+    private boolean isPrepare = false;
+    private final BroadcastReceiver connectionBroadcast = new ConnectivityReceiver();
+    private final IBinder mBinder = new MyBynder();
+    AudioFocusHelper mAudioFocusHelper = null;
+    AudioManager mAudioManager;
+
+    @Override
+    public void NotificationListener(String action) {
+        if (AppConstant.STOP_ACTION.equals(action)){
+            giveUpAudioFocus();
+            relaxRecourse();
+            stopSelf();
+        }
+    }
+
+    enum AudioFocus {
+        NoFocusNoDuck,    // we don't have audio focus, and can't duck
+        NoFocusCanDuck,   // we don't have focus, but can play at a low volume ("ducking")
+        Focused           // we have full audio focus
+    }
+
+    AudioFocus mAudioFocus = AudioFocus.NoFocusNoDuck;
+
+    private void initPlayer() {
+        player = new MediaPlayer();
+        player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        player.setOnErrorListener(this);
+        player.setOnPreparedListener(this);
+        player.setOnPreparedListener(this);
+    }
+
+    private void runPlayer() throws IOException {
+        player.setDataSource("http://edge.live.mp3.mdn.newmedia.nacamar.net:80/radiosalueclassicrock/livestream96s.mp3");
+        player.prepareAsync();
+        isPrepare = true;
+        status = AppConstant.StateRadio.Buffering;
+        putIntentBroadcast(1);
+    }
+
+    private void resetPlayer() {
+        if (player.isPlaying()) {
+            player.stop();
+        }
+        player.reset();
+        putIntentBroadcast(1);
+        status = AppConstant.StateRadio.Buffering;
+    }
+
+    private void relaxRecourse() {
+        stopForeground(true);
+        if (player != null) {
+            player.reset();
+            player.release();
+            player = null;
+        }
+        notificationManager.cancel(NOTIFICATION); // Remove notification
+        isRunning = false;
+        status = AppConstant.StateRadio.Stop;
+        if (mWifiLock.isHeld()) {
+            mWifiLock.release();
+        }
+    }
+
+    private void reConfigMediaPlayer() {
+        if (mAudioFocus == AudioFocus.NoFocusNoDuck) {
+            if (player.isPlaying()) {
+                player.pause();
+                return;
+            }
+        } else if (mAudioFocus == AudioFocus.NoFocusCanDuck) {
+            player.setVolume(DUCK_VOLUME, DUCK_VOLUME);  // we'll be relatively quiet
+        } else {
+            player.setVolume(1.0f, 1.0f); // we can be loud
+        }
+        if (!player.isPlaying()) {
+            player.start();
+        }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "START");
+        isRunning = true;
+        if (!ConnectivityReceiver.isConnected()) {
+            Toast.makeText(this, "Соеденение с интернетом не установленно", Toast.LENGTH_SHORT).show();
+            stopSelf();
+        }
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);
+        //startForeground(1337, notification);
+        MyApplication.getInstance().setConnectivityListener(this);
+        MyApplication.getInstance().setNotificationRadioLister(this);
+        IntentFilter netFilter = new IntentFilter();
+        netFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(connectionBroadcast, netFilter);
+        initPlayer();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
+        mWifiLock.acquire();
+
+        try {
+            runPlayer();
+        } catch (IOException e) {
+            e.printStackTrace();
+            stopForeground(true);
+            Toast.makeText(this, "Соеденение с сервером не установленно", Toast.LENGTH_SHORT).show();
+            stopSelf();
+        }
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+
+        Intent closeReceive = new Intent();
+        closeReceive.setAction(AppConstant.STOP_ACTION);
+        PendingIntent pendingIntentClose = PendingIntent.getBroadcast(this, 12456, closeReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Set the info for the views that show in the notification panel.
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_radio_black_24dp)        // the status icon
+                .setTicker("Radio running")           // the status text
+                .setWhen(System.currentTimeMillis())       // the time stamp
+                .setContentTitle("О'пять Радио")                 // the label of the entry
+                .setContentText("Испольнитель - песня")      // the content of the entry
+                .setContentIntent(contentIntent)
+                .addAction(R.drawable.ic_close_black_24dp   , "CLOSE", pendingIntentClose)// the intent to send when the entry is clicked
+                .setOngoing(true)                          // make persistent (disable swipe-away)
+                .build();
+
+        // Start service in foreground mode
+        startForeground(NOTIFICATION, notification);
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        giveUpAudioFocus();
+        putIntentBroadcast(0);
+        status = AppConstant.StateRadio.Stop;
+        unregisterReceiver(connectionBroadcast);
+        relaxRecourse();
+        super.onDestroy();
+    }
+
+    private void putIntentBroadcast(int state) {
+        Intent intent = new Intent();
+        intent.putExtra("state", state);
+        intent.setAction("StateRadio");
+        sendBroadcast(intent);
+    }
+
+    void tryToGetAudioFocus() {
+        if (mAudioFocus != AudioFocus.Focused && mAudioFocusHelper != null
+                && mAudioFocusHelper.requestFocus())
+            mAudioFocus = AudioFocus.Focused;
+    }
+
+    void giveUpAudioFocus() {
+        if (mAudioFocus == AudioFocus.Focused && mAudioFocusHelper != null
+                && mAudioFocusHelper.abandonFocus())
+            mAudioFocus = AudioFocus.NoFocusNoDuck;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        return mBinder;
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        Toast.makeText(this, "Соеденение с сервером не установленно", Toast.LENGTH_SHORT).show();
+        stopForeground(true);
+        giveUpAudioFocus();
+        stopSelf();
+        return true;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        Log.d("Buffered", TAG);
+        isPrepare = false;
+        tryToGetAudioFocus();
+        reConfigMediaPlayer();
+        putIntentBroadcast(2);
+        status = AppConstant.StateRadio.Play;
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        boolean isPlaying = player.isPlaying();
+        if (isPlaying && !isConnected) {
+            resetPlayer();
+        }
+        if (!isPlaying && isConnected && !isPrepare) {
+            try {
+                runPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onGainedAudioFocus() {
+        mAudioFocus = AudioFocus.Focused;
+            reConfigMediaPlayer();
+    }
+
+    @Override
+    public void onLostAudioFocus(boolean canDuck) {
+        mAudioFocus = canDuck ? AudioFocus.NoFocusCanDuck : AudioFocus.NoFocusNoDuck;
+        if (player != null && player.isPlaying()) {
+            reConfigMediaPlayer();
+        }
+    }
+
+    class MyBynder extends Binder {
+        RadioService getService() {
+            return RadioService.this;
+        }
+    }
+}
