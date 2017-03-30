@@ -20,7 +20,10 @@ import android.widget.Toast;
 
 import com.example.ultim.radio5.AppConstant;
 import com.example.ultim.radio5.MainActivity;
+import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -31,13 +34,12 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     public static final float DUCK_VOLUME = 0.1f;
     private int NOTIFICATION = 1; // Unique identifier for our notification
     public static boolean isRunning = false;
-    public static AppConstant.StateRadio status = AppConstant.StateRadio.Stop;
     private NotificationManager notificationManager = null;
     MediaPlayer player;
     private WifiManager.WifiLock mWifiLock;
     private boolean isPrepare = false;
     private final BroadcastReceiver connectionBroadcast = new ConnectivityReceiver();
-    private final IBinder mBinder = new MyBynder();
+    private final IBinder mBinder = new MyBinder();
     AudioFocusHelper mAudioFocusHelper = null;
     AudioManager mAudioManager;
 
@@ -50,11 +52,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
     }
 
-    enum AudioFocus {
-        NoFocusNoDuck,    // we don't have audio focus, and can't duck
-        NoFocusCanDuck,   // we don't have focus, but can play at a low volume ("ducking")
-        Focused           // we have full audio focus
-    }
+
 
     AudioFocus mAudioFocus = AudioFocus.NoFocusNoDuck;
 
@@ -71,8 +69,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         player.setDataSource("http://edge.live.mp3.mdn.newmedia.nacamar.net:80/radiosalueclassicrock/livestream96s.mp3");
         player.prepareAsync();
         isPrepare = true;
-        status = AppConstant.StateRadio.Buffering;
-        putIntentBroadcast(1);
+        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
     }
 
     private void resetPlayer() {
@@ -80,8 +77,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             player.stop();
         }
         player.reset();
-        putIntentBroadcast(1);
-        status = AppConstant.StateRadio.Buffering;
+        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
     }
 
     private void relaxRecourse() {
@@ -93,7 +89,6 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
         notificationManager.cancel(NOTIFICATION); // Remove notification
         isRunning = false;
-        status = AppConstant.StateRadio.Stop;
         if (mWifiLock.isHeld()) {
             mWifiLock.release();
         }
@@ -177,18 +172,10 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     @Override
     public void onDestroy() {
         giveUpAudioFocus();
-        putIntentBroadcast(0);
-        status = AppConstant.StateRadio.Stop;
+        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.STOP));
         unregisterReceiver(connectionBroadcast);
         relaxRecourse();
         super.onDestroy();
-    }
-
-    private void putIntentBroadcast(int state) {
-        Intent intent = new Intent();
-        intent.putExtra("state", state);
-        intent.setAction("StateRadio");
-        sendBroadcast(intent);
     }
 
     void tryToGetAudioFocus() {
@@ -199,8 +186,9 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     void giveUpAudioFocus() {
         if (mAudioFocus == AudioFocus.Focused && mAudioFocusHelper != null
-                && mAudioFocusHelper.abandonFocus())
+                && mAudioFocusHelper.abandonFocus()){
             mAudioFocus = AudioFocus.NoFocusNoDuck;
+        }
     }
 
     @Override
@@ -224,8 +212,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         isPrepare = false;
         tryToGetAudioFocus();
         reConfigMediaPlayer();
-        putIntentBroadcast(2);
-        status = AppConstant.StateRadio.Play;
+        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.PLAY));
     }
 
     @Override
@@ -257,7 +244,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
     }
 
-    class MyBynder extends Binder {
+    class MyBinder extends Binder {
         RadioService getService() {
             return RadioService.this;
         }

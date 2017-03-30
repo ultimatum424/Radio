@@ -7,12 +7,6 @@ package com.example.ultim.radio5;
 public class AppConstant {
     public static final String YES_ACTION = "YES_ACTION";
     public static final String STOP_ACTION = "STOP_ACTION";
-
-    public enum StateRadio{
-        Stop,
-        Buffering,
-        Play
-    }
 }
 
 
