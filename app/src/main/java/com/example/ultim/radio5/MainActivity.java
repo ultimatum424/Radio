@@ -13,21 +13,30 @@ import android.widget.ProgressBar;
 
 import com.example.ultim.radio5.Radio.RadioService;
 
+import eu.gsottbauer.equalizerview.EqualizerView;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     View.OnClickListener onClickListener;
     //Button button;
     ProgressBar progressBar;
     ImageButton imageButtonPlay;
     ImageButton imageButtonStop;
+    EqualizerView equalizerView;
+
     int state = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("app", "RUN_APP");
         setContentView(R.layout.activity_main);
+        equalizerView = (EqualizerView) findViewById(R.id.equalizerView);
         imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
         imageButtonStop = (ImageButton) findViewById(R.id.imageButtonStop);
         progressBar = (ProgressBar) findViewById(R.id.progress);
+
+
+        equalizerView.setVisibility(View.INVISIBLE);
+
         progressBar.setVisibility(View.INVISIBLE);
         IntentFilter timerFilter = new IntentFilter("StateRadio");
         registerReceiver(myReceiver, timerFilter);
@@ -44,14 +53,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             imageButtonPlay.setVisibility(View.GONE);
             imageButtonStop.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
+            equalizerView.animateBars();
+            equalizerView.setVisibility(View.VISIBLE);
         } else if (RadioService.status.equals(AppConstant.StateRadio.Stop)) {
             imageButtonPlay.setVisibility(View.VISIBLE);
             imageButtonStop.setVisibility(View.GONE);
             progressBar.setVisibility(View.INVISIBLE);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
         } else if (RadioService.status.equals(AppConstant.StateRadio.Buffering)) {
             progressBar.setVisibility(View.VISIBLE);
             imageButtonPlay.setVisibility(View.GONE);
             imageButtonStop.setVisibility(View.VISIBLE);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -60,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Stop service
             Intent intent = new Intent(this, RadioService.class);
             stopService(intent);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
         }
         else {
             // Start service
@@ -70,25 +87,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void changeState(int state){
         if (state == 0) {
-            //button.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             progressBar.setVisibility(View.INVISIBLE);
             imageButtonPlay.setVisibility(View.VISIBLE);
             imageButtonStop.setVisibility(View.GONE);
-            // button.setText("PLAY");
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
         }
         if (state == 1) {
-            // button.setBackgroundColor(getResources().getColor(R.color.colorBuff));
             progressBar.setVisibility(View.VISIBLE);
-            // button.setText("BUFFERING");
             imageButtonPlay.setVisibility(View.GONE);
             imageButtonStop.setVisibility(View.VISIBLE);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
         }
         if (state == 2) {
-            // button.setBackgroundColor(getResources().getColor(R.color.colorRun));
+
             progressBar.setVisibility(View.INVISIBLE);
-            // button.setText("STOP");
             imageButtonPlay.setVisibility(View.GONE);
             imageButtonStop.setVisibility(View.VISIBLE);
+            equalizerView.animateBars();
+            equalizerView.setVisibility(View.VISIBLE);
         }
     }
     @Override
