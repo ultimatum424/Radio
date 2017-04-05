@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
@@ -28,7 +29,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 
 public class RadioService extends Service implements  MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
-     ConnectivityReceiver.ConnectivityReceiverListener, MusicFocusable, NotificationRadioReceiver.NotificationRadioReceiverListener {
+     ConnectivityReceiver.ConnectivityReceiverListener, MusicFocusable, NotificationRadioReceiver.NotificationRadioReceiverListener,
+    MediaPlayer.OnInfoListener{
 
     private static final String TAG = "RADIO";
     public static final float DUCK_VOLUME = 0.1f;
@@ -62,15 +64,26 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         player.setOnErrorListener(this);
         player.setOnPreparedListener(this);
-        player.setOnPreparedListener(this);
+        player.setOnInfoListener(this);
     }
 
-    private void runPlayer() throws IOException {
-        player.setDataSource("http://edge.live.mp3.mdn.newmedia.nacamar.net:80/radiosalueclassicrock/livestream96s.mp3");
+    private void runPlayer() {
+
+        try {
+          // player.setDataSource("http://edge.live.mp3.mdn.newmedia.nacamar.net:80/radiosalueclassicrock/livestream96s.mp3");
+           player.setDataSource("http://217.22.172.49:8000/o5radio");
+        } catch (IOException e) {
+            e.printStackTrace();
+            relaxRecourse();
+            Toast.makeText(this, "Соеденение с сервером не установленно", Toast.LENGTH_SHORT).show();
+            stopSelf();
+
+        }
         player.prepareAsync();
         isPrepare = true;
         EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
     }
+
 
     private void resetPlayer() {
         if (player.isPlaying()) {
@@ -113,7 +126,6 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "START");
         isRunning = true;
         if (!ConnectivityReceiver.isConnected()) {
             Toast.makeText(this, "Соеденение с интернетом не установленно", Toast.LENGTH_SHORT).show();
@@ -137,18 +149,14 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
         mWifiLock.acquire();
 
-        try {
+
             runPlayer();
-        } catch (IOException e) {
-            e.printStackTrace();
-            stopForeground(true);
-            Toast.makeText(this, "Соеденение с сервером не установленно", Toast.LENGTH_SHORT).show();
-            stopSelf();
-        }
+
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
         Intent closeReceive = new Intent();
+
         closeReceive.setAction(AppConstant.STOP_ACTION);
         PendingIntent pendingIntentClose = PendingIntent.getBroadcast(this, 12456, closeReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -158,9 +166,9 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
                 .setTicker("Radio running")           // the status text
                 .setWhen(System.currentTimeMillis())       // the time stamp
                 .setContentTitle("О'пять Радио")                 // the label of the entry
-                .setContentText("Испольнитель - песня")      // the content of the entry
+                //.setContentText("Испольнитель - песня")      // the content of the entry
                 .setContentIntent(contentIntent)
-                .addAction(R.drawable.ic_close_black_24dp   , "CLOSE", pendingIntentClose)// the intent to send when the entry is clicked
+                .addAction(R.drawable.ic_close_black_24dp, "Stop", pendingIntentClose)// the intent to send when the entry is clicked
                 .setOngoing(true)                          // make persistent (disable swipe-away)
                 .build();
 
@@ -208,7 +216,6 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Log.d("Buffered", TAG);
         isPrepare = false;
         tryToGetAudioFocus();
         reConfigMediaPlayer();
@@ -222,11 +229,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             resetPlayer();
         }
         if (!isPlaying && isConnected && !isPrepare) {
-            try {
-                runPlayer();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            runPlayer();
         }
     }
 
@@ -243,6 +246,23 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             reConfigMediaPlayer();
         }
     }
+
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        switch (what) {
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                Log.d(TAG, "BUFFERING_1");
+                EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
+                break;
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                Log.d(TAG, "BUFFERING_0");
+                EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.PLAY));
+                break;
+        }
+            return false;
+    }
+
 
     class MyBinder extends Binder {
         RadioService getService() {
