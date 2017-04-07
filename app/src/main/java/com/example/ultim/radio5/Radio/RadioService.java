@@ -17,6 +17,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.example.ultim.radio5.AppConstant;
@@ -161,7 +162,25 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         PendingIntent pendingIntentClose = PendingIntent.getBroadcast(this, 12456, closeReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Set the info for the views that show in the notification panel.
-        Notification notification = new NotificationCompat.Builder(this)
+
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.custom_push);
+        contentView.setTextViewText(R.id.titlePush, "Custom push");
+       // contentView.setOnClickPendingIntent();
+        //contentView.setImageViewResource(R.id.image, R.drawable.play);
+        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_radio_black_24dp)
+                .setContentIntent(contentIntent)
+                .setContent(contentView);
+
+        Notification notification = mBuilder.build();
+        //notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
+
+       // notification2.defaults |= Notification.DEFAULT_SOUND;
+        //notification2.defaults |= Notification.DEFAULT_VIBRATE;
+       // notificationManager.notify(1, notification2);
+
+       /* Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)        // the status icon
                 .setTicker("Radio running")           // the status text
                 .setWhen(System.currentTimeMillis())       // the time stamp
@@ -170,7 +189,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
                 .setContentIntent(contentIntent)
                 .addAction(R.drawable.ic_close_black_24dp, "Stop", pendingIntentClose)// the intent to send when the entry is clicked
                 .setOngoing(true)                          // make persistent (disable swipe-away)
-                .build();
+                .build();*/
 
         // Start service in foreground mode
         startForeground(NOTIFICATION, notification);
