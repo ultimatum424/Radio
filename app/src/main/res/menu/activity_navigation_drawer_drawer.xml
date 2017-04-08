@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Настройки" />
+        <item
+            android:id="@+id/nav_switch_item"
+            android:title=""
+            android:enabled="false"
+            app:actionLayout="@layout/switch_layout_for_navigation_menu"
+            />
+
+    </group>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KEKER"></TextView>
+    <group>
+        <item
+            android:id="@+id/nav_menu_university_list_textview"
+            android:title="Список ВУЗов">
+        </item>
+    </group>
+
+    <group>
+        <item
+            android:id="@+id/nav_menu_search"
+            android:title=""
+            android:actionLayout="@layout/nav_menu_search">
+        </item>
+    </group>
+</menu>

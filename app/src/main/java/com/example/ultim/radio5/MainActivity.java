@@ -32,6 +32,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         Log.d("app", "RUN_APP");
         setContentView(R.layout.activity_main);
+
+        //changed_by_andrey
+        Intent intent = new Intent(this, NavigationDrawerActivity.class);
+        startActivity(intent);
+        //
         equalizerView = (EqualizerView) findViewById(R.id.equalizerView);
         imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
         imageButtonStop = (ImageButton) findViewById(R.id.imageButtonStop);
