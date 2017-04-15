@@ -104,6 +104,13 @@ public class NavigationDrawerActivity extends AppCompatActivity
         genreListView = (ListView) findViewById(R.id.genre_list_view);
         genreListAdapter = new GenreListAdapter(musicGengres, this);
         genreListView.setAdapter(genreListAdapter);
+        genreListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                genreListAdapter.onItemSelect(position);
+                genreListAdapter.notifyDataSetChanged();
+            }
+        });
 
         nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
         nav_menu_searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
