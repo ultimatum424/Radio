@@ -82,14 +82,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
         nav_menu_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(!b) {
-                    onlineContent.setVisibility(View.VISIBLE);
-                    offlineContent.setVisibility(View.GONE);
+                if(b) {
+                    onlineContent.setVisibility(View.GONE);
+                    offlineContent.setVisibility(View.VISIBLE);
                     networkStatusTextBox.setText("Офлайн");
                 }
                 else {
-                    onlineContent.setVisibility(View.GONE);
-                    offlineContent.setVisibility(View.VISIBLE);
+                    onlineContent.setVisibility(View.VISIBLE);
+                    offlineContent.setVisibility(View.GONE);
                     networkStatusTextBox.setText("Онлайн");
                 }
             }
