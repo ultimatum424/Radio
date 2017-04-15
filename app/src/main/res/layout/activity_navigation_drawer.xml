@@ -135,11 +135,12 @@
                         android:text="Жанры музыки"/>
                 </LinearLayout>
 
-                <RadioGroup
-                    android:id="@+id/music_genres_group"
+                <ListView
+                    android:id="@+id/genre_list_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"/>
+                    android:orientation="vertical"
+                    android:divider="#00000000"/>
 
             </LinearLayout>
         </LinearLayout>

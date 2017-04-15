@@ -24,6 +24,8 @@ import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.ultim.radio5.Genres.GenreItem;
+import com.example.ultim.radio5.Genres.GenreListAdapter;
 import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UnivesityListAdapter;
 
@@ -45,9 +47,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
     LinearLayout offlineContent;
     TextView networkStatusTextBox;
     RadioGroup musicGenresGroup;
+    ListView genreListView;
+    GenreListAdapter genreListAdapter;
 
     ArrayList<UniversityItem> universityItems;
-    ArrayList<String> musicGengres;  //жанры музыки
+    ArrayList<GenreItem> musicGengres;  //жанры музыки
 
     ImageView playButtonImageView;
 
@@ -92,6 +96,15 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
         });
 
+        musicGengres = new ArrayList<GenreItem>();
+        musicGengres.add(new GenreItem("Rock"));
+        musicGengres.add(new GenreItem("Pop"));
+        musicGengres.add(new GenreItem("Jazz"));
+
+        genreListView = (ListView) findViewById(R.id.genre_list_view);
+        genreListAdapter = new GenreListAdapter(musicGengres, this);
+        genreListView.setAdapter(genreListAdapter);
+
         nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
         nav_menu_searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -123,19 +136,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
         });
 
-
-
-        musicGengres = new ArrayList<>();
-        musicGengres.add("Rock");
-        musicGengres.add("Pop");
-        musicGengres.add("Jazz");
-
-        musicGenresGroup = (RadioGroup) findViewById(R.id.music_genres_group);
-        for(String genre : musicGengres){
-            RadioButton b = new RadioButton(this);
-            b.setText(genre);
-            musicGenresGroup.addView(b); //the RadioButtons are added to the radioGroup instead of the layout
-        }
+//        musicGenresGroup = (RadioGroup) findViewById(R.id.music_genres_group);
+//        for(String genre : musicGengres){
+//            RadioButton b = new RadioButton(this);
+//            b.setText(genre);
+//            musicGenresGroup.addView(b); //the RadioButtons are added to the radioGroup instead of the layout
+//        }
 
         playButtonImageView = (ImageView) findViewById(R.id.content_play_btn);
         playButtonImageView.setOnClickListener(new View.OnClickListener() {
