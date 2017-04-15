@@ -13,6 +13,8 @@ import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class UnivesityListAdapter extends BaseAdapter {
@@ -57,6 +59,28 @@ public class UnivesityListAdapter extends BaseAdapter {
     }
 
     private void changeImageViewSrc(ImageView imageView, boolean newState) {
-        imageView.setTag(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
+        imageView.setImageResource(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
+        //imageView.setTag(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
+    }
+
+    public void onItemSelect(int position) {
+        UniversityItem item = universityItems.get(position);
+        item.changeSelectedStatus();
+        sortUniversities();
+    }
+
+
+    private void sortUniversities() {
+        Collections.sort(universityItems, new Comparator<UniversityItem>() {
+            @Override
+            public int compare(UniversityItem o1, UniversityItem o2) {
+                if (o1.isSelected() == o2.isSelected()) {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                } else {
+                    return o1.isSelected() ? -1 : 1;
+                }
+            }
+        });
+        int abc = 3;
     }
 }

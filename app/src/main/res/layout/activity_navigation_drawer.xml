@@ -43,8 +43,8 @@
                 <ImageView
                     android:id="@+id/settings"
                     android:src="@mipmap/ic_settings"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+                    android:layout_height="23dp"
+                    android:layout_width="23dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -84,9 +84,10 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_genres_button"/>
+                        android:layout_width="32dp"
+                        android:layout_height="22dp"
+                        android:src="@mipmap/ic_genres_button"
+                        />
                     <TextView
                         android:id="@+id/nav_menu_university_list_textview"
                         android:layout_width="wrap_content"
@@ -100,15 +101,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:iconifiedByDefault="false"
-                    android:showAsAction="always"
+                    android:showAsAction="ifRoom|collapseActionView"
                     />
                 <ListView
                     android:id="@+id/menu_university_list_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="left"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:divider="#00000000"/>
             </LinearLayout>
 
             <LinearLayout

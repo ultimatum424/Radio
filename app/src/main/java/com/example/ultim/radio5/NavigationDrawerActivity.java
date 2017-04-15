@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,6 +28,8 @@ import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UnivesityListAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,6 +46,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     TextView networkStatusTextBox;
     RadioGroup musicGenresGroup;
 
+    ArrayList<UniversityItem> universityItems;
     ArrayList<String> musicGengres;  //жанры музыки
 
     ImageView playButtonImageView;
@@ -65,7 +69,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        ArrayList<UniversityItem> universityItems = new ArrayList<UniversityItem>();
+        universityItems = new ArrayList<UniversityItem>();
         universityItems.add(new UniversityItem("Волгатех"));
         universityItems.add(new UniversityItem("МарГУ"));
         universityItems.add(new UniversityItem("МОСИ"));
@@ -77,6 +81,13 @@ public class NavigationDrawerActivity extends AppCompatActivity
         universityListView = (ListView) findViewById(R.id.menu_university_list_view);
         univesityListAdapter = new UnivesityListAdapter(universityItems, this);
         universityListView.setAdapter(univesityListAdapter);
+        universityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                univesityListAdapter.onItemSelect(position);
+                univesityListAdapter.notifyDataSetChanged();
+            }
+        });
 
         nav_menu_switch = (Switch) findViewById(R.id.nav_menu_switch);
         nav_menu_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -151,4 +162,5 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private void replacePlayButton() {
         playButtonImageView.setImageResource(R.drawable.btn_stop);
     }
+
 }
