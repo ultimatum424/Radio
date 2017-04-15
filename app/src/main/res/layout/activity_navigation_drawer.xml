@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="100dp"
-            android:paddingLeft="12dp"
+            android:paddingLeft="20dp"
             android:paddingRight="12dp"
             android:layout_gravity="top"
             android:gravity="left"
@@ -38,7 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:paddingLeft="8dp">
 
                 <ImageView
                     android:id="@+id/settings"
@@ -55,13 +56,16 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingLeft="7dp">
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
                 <TextView
                     android:id="@+id/menu_network_status_item"
                     android:text="Онлайн"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingLeft="40dp"/>
+                    android:paddingLeft="23dp"/>
                 <Switch
                     android:id="@+id/nav_menu_switch"
                     android:layout_width="wrap_content"
@@ -78,11 +82,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#c0c0c0"
+                    android:paddingTop="10dp"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="22dp"
@@ -92,8 +104,14 @@
                         android:id="@+id/nav_menu_university_list_textview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Список ВУЗов"/>
+                        android:text="Список ВУЗов"
+                        />
                 </LinearLayout>
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#c0c0c0"
+                    android:paddingBottom="10dp"/>
 
                 <android.support.v7.widget.SearchView
                     android:id="@+id/nav_menu_search"
@@ -119,23 +137,37 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#c0c0c0"
+                    android:paddingTop="10dp"/>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_genres_button"/>
+                        android:layout_width="32dp"
+                        android:layout_height="22dp"
+                        android:src="@mipmap/ic_genres_button"
+                        />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Жанры музыки"/>
                 </LinearLayout>
-
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#c0c0c0"
+                    android:paddingBottom="10dp"/>
                 <ListView
+                    android:paddingTop="15dp"
                     android:id="@+id/genre_list_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

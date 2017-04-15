@@ -91,8 +91,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         universityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                univesityListAdapter.onItemSelect(position);
-                univesityListAdapter.notifyDataSetChanged();
+                onUniversitySelect(position);
             }
         });
 
@@ -107,8 +106,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         genreListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                genreListAdapter.onItemSelect(position);
-                genreListAdapter.notifyDataSetChanged();
+                onGenreSelect(position);
             }
         });
 
@@ -195,4 +193,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
         playButtonImageView.setImageResource(R.drawable.btn_stop);
     }
 
+    private void onGenreSelect(int position) {
+        genreListAdapter.onItemSelect(position);
+
+        genreListAdapter.notifyDataSetChanged();
+    }
+
+    private void onUniversitySelect(int position) {
+        univesityListAdapter.onItemSelect(position);
+        univesityListAdapter.notifyDataSetChanged();
+    }
 }
