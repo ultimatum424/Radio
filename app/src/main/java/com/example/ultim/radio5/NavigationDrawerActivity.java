@@ -70,9 +70,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
 
         universityItems = new ArrayList<UniversityItem>();
-//        universityItems.add(new UniversityItem("Волгатех"));
-//        universityItems.add(new UniversityItem("МарГУ"));
-//        universityItems.add(new UniversityItem("МОСИ"));
+//        universityItems.add(new GenreItem("Волгатех"));
+//        universityItems.add(new GenreItem("МарГУ"));
+//        universityItems.add(new GenreItem("МОСИ"));
         universityItems.add(new UniversityItem("Volgatech"));
         universityItems.add(new UniversityItem("MarSU"));
         universityItems.add(new UniversityItem("MOSI"));
