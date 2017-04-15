@@ -95,7 +95,7 @@
                         android:text="Список ВУЗов"/>
                 </LinearLayout>
 
-                <SearchView
+                <android.support.v7.widget.SearchView
                     android:id="@+id/nav_menu_search"
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="wrap_content"

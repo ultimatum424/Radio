@@ -21,9 +21,11 @@ public class UnivesityListAdapter extends BaseAdapter {
     ArrayList<UniversityItem> universityItems;
     Context context;
     LayoutInflater layoutInflater;
+    String searchPattern;
 
     public UnivesityListAdapter(ArrayList<UniversityItem> items, Context context) {
         super();
+        searchPattern = new String();
         this.universityItems = items;
         this.layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
@@ -55,6 +57,20 @@ public class UnivesityListAdapter extends BaseAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.university_list_item_image);
         textView.setText(currentItem.getName());
         changeImageViewSrc(imageView, currentItem.isSelected);
+
+        if(!searchPattern.isEmpty()) {
+            if(currentItem.getName().toLowerCase().startsWith(searchPattern.toLowerCase())) {
+                view.setVisibility(View.VISIBLE);
+            }
+            else {
+                view.setVisibility(View.GONE);
+            }
+        }
+        else {
+            view.setVisibility(View.VISIBLE);
+        }
+
+
         return view;
     }
 
@@ -82,5 +98,10 @@ public class UnivesityListAdapter extends BaseAdapter {
             }
         });
         int abc = 3;
+    }
+
+    public void onSearchChange(String newText) {
+        this.searchPattern = newText;
+        notifyDataSetChanged();
     }
 }

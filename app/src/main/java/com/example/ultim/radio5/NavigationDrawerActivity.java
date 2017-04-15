@@ -70,9 +70,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
 
         universityItems = new ArrayList<UniversityItem>();
-        universityItems.add(new UniversityItem("Волгатех"));
-        universityItems.add(new UniversityItem("МарГУ"));
-        universityItems.add(new UniversityItem("МОСИ"));
+//        universityItems.add(new UniversityItem("Волгатех"));
+//        universityItems.add(new UniversityItem("МарГУ"));
+//        universityItems.add(new UniversityItem("МОСИ"));
+        universityItems.add(new UniversityItem("Volgatech"));
+        universityItems.add(new UniversityItem("MarSU"));
+        universityItems.add(new UniversityItem("MOSI"));
 
         onlineContent = (LinearLayout) findViewById(R.id.online_content);
         offlineContent = (LinearLayout) findViewById(R.id.offline_content);
@@ -86,6 +89,20 @@ public class NavigationDrawerActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 univesityListAdapter.onItemSelect(position);
                 univesityListAdapter.notifyDataSetChanged();
+            }
+        });
+
+        nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
+        nav_menu_searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                univesityListAdapter.onSearchChange(newText);
+                return false;
             }
         });
 
@@ -105,6 +122,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 }
             }
         });
+
+
 
         musicGengres = new ArrayList<>();
         musicGengres.add("Rock");

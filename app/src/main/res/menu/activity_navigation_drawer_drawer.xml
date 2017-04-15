@@ -28,7 +28,7 @@
 
     <group>
         <item
-            android:id="@+id/nav_menu_search"
+            android:id="@+id/nav_menu_searchs"
             android:title=""
             android:actionLayout="@layout/nav_menu_search">
         </item>
