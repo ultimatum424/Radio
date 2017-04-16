@@ -126,6 +126,6 @@ public class SomeFragment1 extends Fragment {
     }
 
     private void replacePlayButton() {
-        playButtonImageView.setImageResource(R.drawable.btn_stop);
+        playButtonImageView.setImageResource(R.drawable.btn_pause_inactive);
     }
 }

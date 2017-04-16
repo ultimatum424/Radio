@@ -69,6 +69,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         setContentView(R.layout.activity_navigation_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Волгатех");
 
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -197,7 +198,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private void onGenreSelect(int position) {
         genreListAdapter.onItemSelect(position);
 
-        Fragment fragment = new SomeFragment1();
+        Fragment fragment = new SomeFragment2();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);
@@ -208,9 +209,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
     private void onUniversitySelect(int position) {
         univesityListAdapter.onItemSelect(position);
-//        View root = findViewById(R.id.main_content);
-//        root.setVisibility(View.GONE);
-        Fragment fragment = new SomeFragment2();
+
+        Fragment fragment = new SomeFragment1();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);
