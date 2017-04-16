@@ -1,15 +1,11 @@
 package com.example.ultim.radio5;
 
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,24 +21,21 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.ultim.radio5.Fragment.SomeFragment1;
-import com.example.ultim.radio5.Fragment.SomeFragment2;
+import com.example.ultim.radio5.Fragment.FragmentRadio;
+import com.example.ultim.radio5.Fragment.FragmentGenre;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
 import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UnivesityListAdapter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class NavigationDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SomeFragment1.OnFragmentInteractionListener, SomeFragment2.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FragmentRadio.OnFragmentInteractionListener, FragmentGenre.OnFragmentInteractionListener {
     DrawerLayout drawer;
     NavigationView navigationView;
     ListView universityListView;
@@ -198,7 +191,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private void onGenreSelect(int position) {
         genreListAdapter.onItemSelect(position);
 
-        Fragment fragment = new SomeFragment2();
+        Fragment fragment = new FragmentGenre();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);
@@ -210,7 +203,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private void onUniversitySelect(int position) {
         univesityListAdapter.onItemSelect(position);
 
-        Fragment fragment = new SomeFragment1();
+        Fragment fragment = new FragmentRadio();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.ultim.radio5.R;
 
@@ -14,12 +15,12 @@ import com.example.ultim.radio5.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SomeFragment2.OnFragmentInteractionListener} interface
+ * {@link FragmentRadio.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SomeFragment2#newInstance} factory method to
+ * Use the {@link FragmentRadio#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SomeFragment2 extends Fragment {
+public class FragmentRadio extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,9 +32,14 @@ public class SomeFragment2 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SomeFragment2() {
+    ImageView playButtonImageView;
+    String universityName = "Волгатех";
+
+
+    public FragmentRadio() {
         // Required empty public constructor
     }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -41,17 +47,18 @@ public class SomeFragment2 extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment SomeFragment2.
+     * @return A new instance of fragment FragmentRadio.
      */
     // TODO: Rename and change types and number of parameters
-    public static SomeFragment2 newInstance(String param1, String param2) {
-        SomeFragment2 fragment = new SomeFragment2();
+    public static FragmentRadio newInstance(String param1, String param2) {
+        FragmentRadio fragment = new FragmentRadio();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +73,16 @@ public class SomeFragment2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.some_fragment2, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_radio, container, false);
+        playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
+        playButtonImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                replacePlayButton();
+            }
+        });
+
+        return inflater.inflate(R.layout.fragment_radio, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -106,5 +122,9 @@ public class SomeFragment2 extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void replacePlayButton() {
+        playButtonImageView.setImageResource(R.drawable.btn_pause_inactive);
     }
 }
