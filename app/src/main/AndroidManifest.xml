@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/NewTheme"
+        android:theme="@style/testTeheme"
 
         tools:replace="android:allowBackup">
         <activity
@@ -47,7 +47,7 @@
         <activity
             android:name=".NavigationDrawerActivity"
             android:label="@string/title_activity_navigation_drawer"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/testTeheme"></activity>
     </application>
 
 </manifest>

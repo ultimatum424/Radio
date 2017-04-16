@@ -20,7 +20,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import eu.gsottbauer.equalizerview.EqualizerView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     View.OnClickListener onClickListener;
     ProgressBar progressBar;
     ImageButton imageButtonPlay;

@@ -39,14 +39,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingLeft="8dp">
+                android:paddingLeft="5dp">
 
                 <ImageView
-                    android:id="@+id/settings"
+                    android:id="@+id/settingsImageView"
                     android:src="@mipmap/ic_settings"
                     android:layout_height="23dp"
                     android:layout_width="23dp"/>
                 <TextView
+                    android:paddingLeft="3dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Настройки"/>
@@ -71,12 +72,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:textColor="#000000"
                     />
             </RelativeLayout>
 
-
             <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/online_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,49 +86,56 @@
                     android:layout_width="fill_parent"
                     android:layout_height="1dp"
                     android:background="#c0c0c0"
-                    android:paddingTop="10dp"/>
+                    android:paddingTop="10dp" />
+
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp">
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp">
 
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="22dp"
-                        android:src="@mipmap/ic_genres_button"
-                        />
+                        android:src="@mipmap/ic_genres_button" />
+
                     <TextView
                         android:id="@+id/nav_menu_university_list_textview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Список ВУЗов"
-                        />
+                        android:text="Список ВУЗов" />
                 </LinearLayout>
+
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="1dp"
                     android:background="#c0c0c0"
-                    android:paddingBottom="10dp"/>
+                    android:paddingBottom="10dp" />
 
-                <android.support.v7.widget.SearchView
+
+
+                <android.support.v7.widget.SearchView xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/nav_menu_search"
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
                     android:layout_gravity="right"
+                    android:background="#FFFFFF"
                     android:showAsAction="ifRoom|collapseActionView"
-                    />
+                    android:layout_marginTop="20dp" />
+
                 <ListView
                     android:id="@+id/menu_university_list_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
                     android:layout_weight="1"
-                    android:divider="#00000000"/>
+                    android:divider="#00000000"
+                    android:gravity="left"
+                    android:paddingTop="15dp"/>
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/offline_content"

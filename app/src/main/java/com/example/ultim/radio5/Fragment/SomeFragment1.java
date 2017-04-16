@@ -34,7 +34,8 @@ public class SomeFragment1 extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     ImageView playButtonImageView;
-    NavigationDrawerActivity activity;
+    String universityName = "Волгатех";
+
 
     public SomeFragment1() {
         // Required empty public constructor

@@ -1,5 +1,7 @@
 package com.example.ultim.radio5;
 
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +31,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.ultim.radio5.Fragment.SomeFragment1;
+import com.example.ultim.radio5.Fragment.SomeFragment2;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
 import com.example.ultim.radio5.Univesity.UniversityItem;
@@ -39,7 +42,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class NavigationDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SomeFragment1.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SomeFragment1.OnFragmentInteractionListener, SomeFragment2.OnFragmentInteractionListener {
     DrawerLayout drawer;
     NavigationView navigationView;
     ListView universityListView;
@@ -116,6 +119,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         });
 
         nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
+        nav_menu_searchView.setIconified(false);
         nav_menu_searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -153,6 +157,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
 //            musicGenresGroup.addView(b); //the RadioButtons are added to the radioGroup instead of the layout
 //        }
 
+        ImageView settings = (ImageView) findViewById(R.id.settingsImageView);
+        settings.setColorFilter(Color.WHITE);
 
     }
 
@@ -204,12 +210,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
         univesityListAdapter.onItemSelect(position);
 //        View root = findViewById(R.id.main_content);
 //        root.setVisibility(View.GONE);
+        Fragment fragment = new SomeFragment2();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.content_container, fragment);
+        ft.commit();
 
         univesityListAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        //empty body
     }
 }
