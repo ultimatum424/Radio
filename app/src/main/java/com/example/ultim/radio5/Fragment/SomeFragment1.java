@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 
 
@@ -31,9 +33,13 @@ public class SomeFragment1 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    ImageView playButtonImageView;
+    NavigationDrawerActivity activity;
+
     public SomeFragment1() {
         // Required empty public constructor
     }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -53,6 +59,7 @@ public class SomeFragment1 extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +73,15 @@ public class SomeFragment1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.some_fragment1, container, false);
+        playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
+        playButtonImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                replacePlayButton();
+            }
+        });
+
         return inflater.inflate(R.layout.some_fragment1, container, false);
     }
 
@@ -106,5 +122,9 @@ public class SomeFragment1 extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void replacePlayButton() {
+        playButtonImageView.setImageResource(R.drawable.btn_stop);
     }
 }

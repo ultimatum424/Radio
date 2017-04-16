@@ -1,8 +1,12 @@
 package com.example.ultim.radio5;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.view.View;
@@ -24,6 +28,7 @@ import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.ultim.radio5.Fragment.SomeFragment1;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
 import com.example.ultim.radio5.Univesity.UniversityItem;
@@ -34,7 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class NavigationDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SomeFragment1.OnFragmentInteractionListener {
     DrawerLayout drawer;
     NavigationView navigationView;
     ListView universityListView;
@@ -53,7 +58,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     ArrayList<UniversityItem> universityItems;
     ArrayList<GenreItem> musicGengres;  //жанры музыки
 
-    ImageView playButtonImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,13 +153,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
 //            musicGenresGroup.addView(b); //the RadioButtons are added to the radioGroup instead of the layout
 //        }
 
-        playButtonImageView = (ImageView) findViewById(R.id.content_play_btn);
-        playButtonImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                replacePlayButton();
-            }
-        });
+
     }
 
     @Override
@@ -189,18 +188,28 @@ public class NavigationDrawerActivity extends AppCompatActivity
         return true;
     }
 
-    private void replacePlayButton() {
-        playButtonImageView.setImageResource(R.drawable.btn_stop);
-    }
-
     private void onGenreSelect(int position) {
         genreListAdapter.onItemSelect(position);
+
+        Fragment fragment = new SomeFragment1();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.content_container, fragment);
+        ft.commit();
 
         genreListAdapter.notifyDataSetChanged();
     }
 
     private void onUniversitySelect(int position) {
         univesityListAdapter.onItemSelect(position);
+//        View root = findViewById(R.id.main_content);
+//        root.setVisibility(View.GONE);
+
         univesityListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
