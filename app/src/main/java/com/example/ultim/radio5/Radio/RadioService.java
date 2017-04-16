@@ -26,8 +26,10 @@ import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class RadioService extends Service implements  MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
      ConnectivityReceiver.ConnectivityReceiverListener, MusicFocusable, NotificationRadioReceiver.NotificationRadioReceiverListener,
@@ -112,6 +114,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         if (mAudioFocus == AudioFocus.NoFocusNoDuck) {
             if (player.isPlaying()) {
                 player.pause();
+                EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.PAUSE));
                 return;
             }
         } else if (mAudioFocus == AudioFocus.NoFocusCanDuck) {
@@ -121,6 +124,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
         if (!player.isPlaying()) {
             player.start();
+            EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.PLAY));
         }
     }
 
@@ -146,26 +150,23 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
-        mWifiLock.acquire();
+            mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                    .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
+            mWifiLock.acquire();
 
 
             runPlayer();
 
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-
         Intent closeReceive = new Intent();
-
         closeReceive.setAction(AppConstant.STOP_ACTION);
         PendingIntent pendingIntentClose = PendingIntent.getBroadcast(this, 12456, closeReceive, PendingIntent.FLAG_UPDATE_CURRENT);
-
+       // PendingIntent pendingIntent = PendingIntent.getService(this, 0,
         // Set the info for the views that show in the notification panel.
-
-
         RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.custom_push);
-        contentView.setTextViewText(R.id.titlePush, "Custom push");
+        contentView.setTextViewText(R.id.titlePush, "Исполнитель: Название трека");
+        contentView.setOnClickPendingIntent(R.id.button_close, pendingIntentClose);
        // contentView.setOnClickPendingIntent();
         //contentView.setImageViewResource(R.id.image, R.drawable.play);
         NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
@@ -189,7 +190,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
                 .setContentIntent(contentIntent)
                 .addAction(R.drawable.ic_close_black_24dp, "Stop", pendingIntentClose)// the intent to send when the entry is clicked
                 .setOngoing(true)                          // make persistent (disable swipe-away)
-                .build();*/
+                .build();
+                */
 
         // Start service in foreground mode
         startForeground(NOTIFICATION, notification);
@@ -288,4 +290,14 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             return RadioService.this;
         }
     }
+
+    @Subscribe
+    public void onEvent(String start){
+        if (Objects.equals(start, "start")) {
+            tryToGetAudioFocus();
+            reConfigMediaPlayer();
+        }
+    }
+
+
 }

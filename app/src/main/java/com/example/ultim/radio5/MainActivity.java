@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton imageButtonPlay;
     ImageButton imageButtonStop;
     EqualizerView equalizerView;
+    RadioStateEvent.SateEnum state = RadioStateEvent.SateEnum.STOP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         progressBar = (ProgressBar) findViewById(R.id.progress);
         equalizerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
-        IntentFilter timerFilter = new IntentFilter("StateRadio");
         onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void startOrStopService(){
+        if (state == RadioStateEvent.SateEnum.PAUSE){
+            EventBus.getDefault().post("start");
+        }
         if( RadioService.isRunning){
             // Stop service
             Intent intent = new Intent(this, RadioService.class);
@@ -65,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void changeState(RadioStateEvent.SateEnum state){
+    private void changeState(RadioStateEvent.SateEnum inputState){
+        state = inputState;
         if (state == RadioStateEvent.SateEnum.STOP) {
             progressBar.setVisibility(View.INVISIBLE);
             imageButtonPlay.setVisibility(View.VISIBLE);
@@ -85,6 +89,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressBar.setVisibility(View.INVISIBLE);
             imageButtonPlay.setVisibility(View.GONE);
             imageButtonStop.setVisibility(View.VISIBLE);
+            equalizerView.animateBars();
+            equalizerView.setVisibility(View.VISIBLE);
+        }
+        if (state == RadioStateEvent.SateEnum.PAUSE) {
+
+            progressBar.setVisibility(View.INVISIBLE);
+            imageButtonPlay.setVisibility(View.VISIBLE);
+            imageButtonStop.setVisibility(View.GONE);
             equalizerView.animateBars();
             equalizerView.setVisibility(View.VISIBLE);
         }
