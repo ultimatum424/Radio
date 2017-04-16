@@ -201,15 +201,16 @@ public class NavigationDrawerActivity extends AppCompatActivity
     }
 
     private void onUniversitySelect(int position) {
-        univesityListAdapter.onItemSelect(position);
+        //univesityListAdapter.onItemSelect(position);
 
         Fragment fragment = new FragmentRadio();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);
         ft.commit();
+        drawer.closeDrawers();
 
-        univesityListAdapter.notifyDataSetChanged();
+        //univesityListAdapter.notifyDataSetChanged();
     }
 
     @Override

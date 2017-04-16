@@ -28,6 +28,7 @@ public class UnivesityListAdapter extends BaseAdapter {
         searchPattern = new String();
         this.universityItems = items;
         this.layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+
     }
 
     @Override
@@ -46,8 +47,8 @@ public class UnivesityListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        UniversityItem currentItem = universityItems.get(i);
+    public View getView(final int i, View view, ViewGroup viewGroup) {
+        final UniversityItem currentItem = universityItems.get(i);
 
         if(view == null) {
             view = layoutInflater.inflate(R.layout.university_listview_item, viewGroup, false);
@@ -55,6 +56,13 @@ public class UnivesityListAdapter extends BaseAdapter {
 
         TextView textView = (TextView) view.findViewById(R.id.university_list_item_text);
         ImageView imageView = (ImageView) view.findViewById(R.id.university_list_item_image);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemSelect(i);
+            }
+        });
+
         textView.setText(currentItem.getName());
         changeImageViewSrc(imageView, currentItem.isSelected);
 
@@ -70,19 +78,18 @@ public class UnivesityListAdapter extends BaseAdapter {
             view.setVisibility(View.VISIBLE);
         }
 
-
         return view;
     }
 
     private void changeImageViewSrc(ImageView imageView, boolean newState) {
         imageView.setImageResource(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
-        //imageView.setTag(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
     }
 
     public void onItemSelect(int position) {
         UniversityItem item = universityItems.get(position);
         item.changeSelectedStatus();
         sortUniversities();
+        notifyDataSetChanged();
     }
 
 
@@ -97,7 +104,6 @@ public class UnivesityListAdapter extends BaseAdapter {
                 }
             }
         });
-        int abc = 3;
     }
 
     public void onSearchChange(String newText) {
