@@ -1,6 +1,5 @@
 package com.example.ultim.radio5.Univesity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 
 import java.util.ArrayList;
@@ -23,12 +21,13 @@ public class UnivesityListAdapter extends BaseAdapter {
     LayoutInflater layoutInflater;
     String searchPattern;
 
+    UniversityItem current;
+
     public UnivesityListAdapter(ArrayList<UniversityItem> items, Context context) {
         super();
         searchPattern = new String();
         this.universityItems = items;
         this.layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-
     }
 
     @Override
@@ -59,7 +58,7 @@ public class UnivesityListAdapter extends BaseAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemSelect(i);
+                onIconClick(i);
             }
         });
 
@@ -85,13 +84,12 @@ public class UnivesityListAdapter extends BaseAdapter {
         imageView.setImageResource(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
     }
 
-    public void onItemSelect(int position) {
+    public void onIconClick(int position) {
         UniversityItem item = universityItems.get(position);
         item.changeSelectedStatus();
         sortUniversities();
         notifyDataSetChanged();
     }
-
 
     private void sortUniversities() {
         Collections.sort(universityItems, new Comparator<UniversityItem>() {
@@ -109,5 +107,15 @@ public class UnivesityListAdapter extends BaseAdapter {
     public void onSearchChange(String newText) {
         this.searchPattern = newText;
         notifyDataSetChanged();
+    }
+
+    public boolean onSelect(int position) {
+        UniversityItem item = universityItems.get(position);
+        if(current != null && current.equals(item)) {
+            return false;
+        }
+
+        current = item;
+        return true;
     }
 }

@@ -25,6 +25,7 @@ import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.ultim.radio5.Fragment.FragmentGreetings;
 import com.example.ultim.radio5.Fragment.FragmentRadio;
 import com.example.ultim.radio5.Fragment.FragmentGenre;
 import com.example.ultim.radio5.Genres.GenreItem;
@@ -154,6 +155,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         ImageView settings = (ImageView) findViewById(R.id.settingsImageView);
         settings.setColorFilter(Color.WHITE);
 
+
+        initContent("init");
     }
 
     @Override
@@ -201,14 +204,16 @@ public class NavigationDrawerActivity extends AppCompatActivity
     }
 
     private void onUniversitySelect(int position) {
-        //univesityListAdapter.onItemSelect(position);
+        //univesityListAdapter.onIconClick(position);
+       if(univesityListAdapter.onSelect(position)) {
 
-        Fragment fragment = new FragmentRadio();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.content_container, fragment);
-        ft.commit();
-        drawer.closeDrawers();
+           Fragment fragment = new FragmentRadio();
+           FragmentManager fm = getSupportFragmentManager();
+           FragmentTransaction ft = fm.beginTransaction();
+           ft.replace(R.id.content_container, fragment);
+           ft.commit();
+       }
+       drawer.closeDrawers();
 
         //univesityListAdapter.notifyDataSetChanged();
     }
@@ -216,5 +221,24 @@ public class NavigationDrawerActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         //empty body
+    }
+
+    private void initContent(String param) {
+        Fragment fragment;
+        if(param == "init") {
+            fragment = new FragmentGreetings();
+        }
+        else if (param == "other") {
+            fragment = new FragmentRadio();
+        }
+        else {
+            fragment = new FragmentGenre();
+        }
+
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.content_container, fragment);
+        ft.commit();
+        drawer.closeDrawers();
     }
 }
