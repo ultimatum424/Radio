@@ -63,7 +63,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         setContentView(R.layout.activity_navigation_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Волгатех");
+        getSupportActionBar().setTitle("Home");
 
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -204,10 +204,10 @@ public class NavigationDrawerActivity extends AppCompatActivity
     }
 
     private void onUniversitySelect(int position) {
-        //univesityListAdapter.onIconClick(position);
+
        if(univesityListAdapter.onSelect(position)) {
 
-           Fragment fragment = new FragmentRadio();
+           Fragment fragment = FragmentRadio.newInstance(univesityListAdapter.getCurrent().getName());
            FragmentManager fm = getSupportFragmentManager();
            FragmentTransaction ft = fm.beginTransaction();
            ft.replace(R.id.content_container, fragment);
@@ -215,7 +215,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
        }
        drawer.closeDrawers();
 
-        //univesityListAdapter.notifyDataSetChanged();
     }
 
     @Override

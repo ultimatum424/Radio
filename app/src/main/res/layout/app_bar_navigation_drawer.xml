@@ -20,7 +20,7 @@
             android:theme="@style/ToolBarStyle"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             android:textAlignment="center"
-            android:text="Волгатех">
+            android:text="Home">
             </android.support.v7.widget.Toolbar>
 
 

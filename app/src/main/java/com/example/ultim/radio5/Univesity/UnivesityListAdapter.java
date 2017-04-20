@@ -118,4 +118,8 @@ public class UnivesityListAdapter extends BaseAdapter {
         current = item;
         return true;
     }
+
+    public UniversityItem getCurrent() {
+        return current;
+    }
 }
