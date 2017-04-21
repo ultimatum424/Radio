@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
+import com.example.ultim.radio5.Radio.NotificationRadioService;
 import com.example.ultim.radio5.Radio.RadioService;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,14 +58,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if( RadioService.isRunning){
             // Stop service
             Intent intent = new Intent(this, RadioService.class);
-            stopService(intent);
+            //stopService(intent);
+            Intent serviceIntent = new Intent(MainActivity.this, NotificationRadioService.class);
+            serviceIntent.setAction(AppConstant.ACTION.STOPFOREGROUND_ACTION);
+            startService(serviceIntent);
             equalizerView.stopBars();
             equalizerView.setVisibility(View.INVISIBLE);
         }
         else {
             // Start service
             Intent intent = new Intent(this, RadioService.class);
-            startService(intent);
+            //startService(intent);
+            Intent serviceIntent = new Intent(MainActivity.this, NotificationRadioService.class);
+            serviceIntent.setAction(AppConstant.ACTION.STARTFOREGROUND_ACTION);
+            startService(serviceIntent);
         }
     }
 

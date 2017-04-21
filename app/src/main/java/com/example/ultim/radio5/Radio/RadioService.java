@@ -138,63 +138,27 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);
-        //startForeground(1337, notification);
+        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);;
         MyApplication.getInstance().setConnectivityListener(this);
         MyApplication.getInstance().setNotificationRadioLister(this);
         IntentFilter netFilter = new IntentFilter();
         netFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(connectionBroadcast, netFilter);
         initPlayer();
+        mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
+        mWifiLock.acquire();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-            mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
-                    .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
-            mWifiLock.acquire();
-
-
-            runPlayer();
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-        Intent closeReceive = new Intent();
-        closeReceive.setAction(AppConstant.STOP_ACTION);
-        PendingIntent pendingIntentClose = PendingIntent.getBroadcast(this, 12456, closeReceive, PendingIntent.FLAG_UPDATE_CURRENT);
-       // PendingIntent pendingIntent = PendingIntent.getService(this, 0,
-        // Set the info for the views that show in the notification panel.
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.custom_push);
-        contentView.setTextViewText(R.id.titlePush, "Исполнитель: Название трека");
-        contentView.setOnClickPendingIntent(R.id.button_close, pendingIntentClose);
-       // contentView.setOnClickPendingIntent();
-        //contentView.setImageViewResource(R.id.image, R.drawable.play);
-        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_radio_black_24dp)
-                .setContentIntent(contentIntent)
-                .setContent(contentView);
-
-        Notification notification = mBuilder.build();
-        //notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
-
-       // notification2.defaults |= Notification.DEFAULT_SOUND;
-        //notification2.defaults |= Notification.DEFAULT_VIBRATE;
-       // notificationManager.notify(1, notification2);
-
-       /* Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_radio_black_24dp)        // the status icon
-                .setTicker("Radio running")           // the status text
-                .setWhen(System.currentTimeMillis())       // the time stamp
-                .setContentTitle("О'пять Радио")                 // the label of the entry
-                //.setContentText("Испольнитель - песня")      // the content of the entry
-                .setContentIntent(contentIntent)
-                .addAction(R.drawable.ic_close_black_24dp, "Stop", pendingIntentClose)// the intent to send when the entry is clicked
-                .setOngoing(true)                          // make persistent (disable swipe-away)
-                .build();
-                */
-
-        // Start service in foreground mode
-        startForeground(NOTIFICATION, notification);
+        if (intent.getAction()!=  null) {
+            if (intent.getAction().equals(AppConstant.ACTION.STARTFOREGROUND_ACTION)) {
+                Toast.makeText(this, "Start Play", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "Clicked Play");
+                runPlayer();
+            }
+        }
         return START_STICKY;
     }
 
@@ -284,7 +248,6 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             return false;
     }
 
-
     class MyBinder extends Binder {
         RadioService getService() {
             return RadioService.this;
@@ -298,6 +261,4 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             reConfigMediaPlayer();
         }
     }
-
-
 }
