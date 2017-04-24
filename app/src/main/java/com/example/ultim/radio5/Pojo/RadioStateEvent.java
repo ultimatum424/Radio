@@ -20,6 +20,7 @@ public class RadioStateEvent {
         STOP,
         PAUSE,
         PLAY,
-        BUFFERING
+        BUFFERING,
+        OFFLINE
     }
 }

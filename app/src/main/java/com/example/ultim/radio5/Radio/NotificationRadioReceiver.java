@@ -14,9 +14,6 @@ public class NotificationRadioReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         String action = intent.getAction();
-         if (AppConstant.STOP_ACTION.equals(action)){
-
-         }
          if (notificationRadioReceiverListener != null){
              notificationRadioReceiverListener.NotificationListener(action);
          }

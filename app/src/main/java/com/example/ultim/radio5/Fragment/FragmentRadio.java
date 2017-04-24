@@ -1,6 +1,7 @@
 package com.example.ultim.radio5.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.ultim.radio5.AppConstant;
+import com.example.ultim.radio5.NavigationDrawerActivity;
+import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
+import com.example.ultim.radio5.Radio.RadioService;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import eu.gsottbauer.equalizerview.EqualizerView;
 
 
 /**
@@ -21,11 +32,13 @@ import com.example.ultim.radio5.R;
  * Use the {@link FragmentRadio#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentRadio extends Fragment {
+public class FragmentRadio extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    EqualizerView equalizerView;
+    RadioStateEvent.SateEnum state = RadioStateEvent.SateEnum.STOP;
 
     // TODO: Rename and change types of parameters
     private String mParam1; //university-name
@@ -73,14 +86,12 @@ public class FragmentRadio extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_radio, container, false);
         playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
-        playButtonImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                replacePlayButton();
-            }
-        });
+        equalizerView = (EqualizerView) rootView.findViewById(R.id.equalaizer);
+        equalizerView.setVisibility(View.INVISIBLE);
+        EventBus.getDefault().register(this);
+        playButtonImageView.setOnClickListener(this);
 
-        return inflater.inflate(R.layout.fragment_radio, container, false);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -108,6 +119,11 @@ public class FragmentRadio extends Fragment {
         //((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Home");
     }
 
+    @Override
+    public void onClick(View v) {
+        replacePlayButton();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -124,6 +140,62 @@ public class FragmentRadio extends Fragment {
     }
 
     private void replacePlayButton() {
-        playButtonImageView.setImageResource(R.drawable.btn_pause_inactive);
+        if (state == RadioStateEvent.SateEnum.PAUSE){
+            EventBus.getDefault().post("start");
+        }
+        if( RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
+            // Stop service
+            Intent intent = new Intent(getActivity(), RadioService.class);
+            //stopService(intent);
+            getActivity().stopService(intent);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            // Start service
+            Intent intent = new Intent(getActivity(), RadioService.class);
+            getActivity().startService(intent);
+        }
+
     }
+
+    private void changeState(RadioStateEvent.SateEnum inputState){
+        state = inputState;
+        if (state == RadioStateEvent.SateEnum.STOP) {
+            playButtonImageView.setImageResource(R.drawable.btn_pause_active);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
+        }
+        if (state == RadioStateEvent.SateEnum.BUFFERING) {
+            playButtonImageView.setImageResource(R.drawable.btn_pause_active);
+            equalizerView.stopBars();
+            equalizerView.setVisibility(View.INVISIBLE);
+        }
+        if (state == RadioStateEvent.SateEnum.PLAY) {
+
+            playButtonImageView.setImageResource(R.drawable.btn_pause_inactive);
+            equalizerView.animateBars();
+            equalizerView.setVisibility(View.VISIBLE);
+        }
+        if (state == RadioStateEvent.SateEnum.PAUSE) {
+
+            playButtonImageView.setImageResource(R.drawable.btn_pause_active);
+            equalizerView.animateBars();
+            equalizerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(RadioStateEvent event){
+        changeState( event.getSateEnum());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+
 }

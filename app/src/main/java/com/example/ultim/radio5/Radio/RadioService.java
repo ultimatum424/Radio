@@ -21,13 +21,18 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.example.ultim.radio5.AppConstant;
-import com.example.ultim.radio5.MainActivity;
+import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.Objects;
+
+import static com.example.ultim.radio5.Pojo.RadioStateEvent.*;
+import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.*;
 
 public class RadioService extends Service implements  MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
      ConnectivityReceiver.ConnectivityReceiverListener, MusicFocusable, NotificationRadioReceiver.NotificationRadioReceiverListener,
@@ -35,29 +40,73 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     private static final String TAG = "RADIO";
     public static final float DUCK_VOLUME = 0.1f;
-    private int NOTIFICATION = 1; // Unique identifier for our notification
-    public static boolean isRunning = false;
+
     private NotificationManager notificationManager = null;
+    Notification radioNotification;
+    RemoteViews views;
+    public static SateEnum stateRadio = STOP;
     MediaPlayer player;
     private WifiManager.WifiLock mWifiLock;
-    private boolean isPrepare = false;
+
     private final BroadcastReceiver connectionBroadcast = new ConnectivityReceiver();
+    private final BroadcastReceiver notificationBroadcast = new NotificationRadioReceiver();
     private final IBinder mBinder = new MyBinder();
     AudioFocusHelper mAudioFocusHelper = null;
     AudioManager mAudioManager;
 
     @Override
     public void NotificationListener(String action) {
-        if (AppConstant.STOP_ACTION.equals(action)){
+        if (AppConstant.ACTION.STOPFOREGROUND_ACTION.equals(action)){
             giveUpAudioFocus();
             relaxRecourse();
             stopSelf();
         }
+        if (AppConstant.ACTION.PLAY_ACTION.equals(action)){
+            tryToGetAudioFocus();
+            reConfigMediaPlayer(true);
+        }
     }
 
-
-
     AudioFocus mAudioFocus = AudioFocus.NoFocusNoDuck;
+
+    void showNotification(){
+        views = new RemoteViews(getPackageName(),
+                R.layout.custom_push);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // Select action
+        Intent notificationIntent = new Intent(this, NavigationDrawerActivity.class);
+        notificationIntent.setAction(AppConstant.ACTION.MAIN_ACTION);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingSelectIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+        // Close action
+        Intent closeNotificationIntent = new Intent();
+        closeNotificationIntent.setAction(AppConstant.ACTION.STOPFOREGROUND_ACTION);
+        PendingIntent pendingIntentClose = PendingIntent.getBroadcast(getBaseContext(), 2, closeNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.button_close, pendingIntentClose);
+        // Play action
+        Intent playNotificationIntent = new Intent(AppConstant.ACTION.PLAY_ACTION);
+        PendingIntent pendingIntentPlay = PendingIntent.getBroadcast(getBaseContext(), 1, playNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.button_play_push, pendingIntentPlay);
+
+        views.setTextViewText(R.id.titlePush, "Исполнитель: Название трека");
+        radioNotification = new Notification.Builder(this).build();
+        radioNotification.contentView = views;
+        radioNotification.flags = Notification.FLAG_ONGOING_EVENT;
+        radioNotification.icon = R.drawable.ic_radio_black_24dp;
+        radioNotification.contentIntent = pendingSelectIntent;
+        startForeground(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification);
+    }
+
+    private void updateNotification(){
+        if (RadioService.stateRadio != PLAY){
+            views.setInt(R.id.button_play_push, "setBackgroundResource", R.mipmap.play_ic);
+        } else {
+            views.setInt(R.id.button_play_push, "setBackgroundResource", R.mipmap.pause_ic);
+        }
+        notificationManager.notify(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification);
+    }
 
     private void initPlayer() {
         player = new MediaPlayer();
@@ -71,7 +120,6 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     private void runPlayer() {
 
         try {
-          // player.setDataSource("http://edge.live.mp3.mdn.newmedia.nacamar.net:80/radiosalueclassicrock/livestream96s.mp3");
            player.setDataSource("http://217.22.172.49:8000/o5radio");
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,8 +129,9 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
         }
         player.prepareAsync();
-        isPrepare = true;
-        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
+        stateRadio = BUFFERING;
+        showNotification();
+        EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
     }
 
 
@@ -91,7 +140,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             player.stop();
         }
         player.reset();
-        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
+        stateRadio = BUFFERING;
+        EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
     }
 
     private void relaxRecourse() {
@@ -100,18 +150,22 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             player.reset();
             player.release();
             player = null;
+            stateRadio = STOP;
+            EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
         }
-        notificationManager.cancel(NOTIFICATION); // Remove notification
-        isRunning = false;
+        notificationManager.cancel(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE); // Remove notification
         if (mWifiLock.isHeld()) {
             mWifiLock.release();
         }
     }
 
-    private void reConfigMediaPlayer() {
-        if (mAudioFocus == AudioFocus.NoFocusNoDuck) {
+    private void reConfigMediaPlayer(boolean isBroadcast) {
+        if (mAudioFocus == AudioFocus.NoFocusNoDuck || isBroadcast) {
             if (player.isPlaying()) {
                 player.pause();
+                stateRadio = PAUSE;
+                updateNotification();
+                EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
                 return;
             }
         } else if (mAudioFocus == AudioFocus.NoFocusCanDuck) {
@@ -121,87 +175,49 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
         if (!player.isPlaying()) {
             player.start();
+            stateRadio = PLAY;
+            EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
         }
+
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        isRunning = true;
+        stateRadio = STOP;
         if (!ConnectivityReceiver.isConnected()) {
             Toast.makeText(this, "Соеденение с интернетом не установленно", Toast.LENGTH_SHORT).show();
             stopSelf();
         }
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);
-        //startForeground(1337, notification);
+        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);;
         MyApplication.getInstance().setConnectivityListener(this);
         MyApplication.getInstance().setNotificationRadioLister(this);
+        IntentFilter intentFilter1 = new IntentFilter();
+        intentFilter1.addAction("com.radio5.radionotification.action.stopforeground");
+        intentFilter1.addAction("com.radio5.radionotification.action.play");
+        registerReceiver(notificationBroadcast, intentFilter1);
         IntentFilter netFilter = new IntentFilter();
         netFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(connectionBroadcast, netFilter);
         initPlayer();
+        mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
+        mWifiLock.acquire();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
-        mWifiLock.acquire();
-
-
-            runPlayer();
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-
-        Intent closeReceive = new Intent();
-
-        closeReceive.setAction(AppConstant.STOP_ACTION);
-        PendingIntent pendingIntentClose = PendingIntent.getBroadcast(this, 12456, closeReceive, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Set the info for the views that show in the notification panel.
-
-
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.custom_push);
-        contentView.setTextViewText(R.id.titlePush, "Custom push");
-       // contentView.setOnClickPendingIntent();
-        //contentView.setImageViewResource(R.id.image, R.drawable.play);
-        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_radio_black_24dp)
-                .setContentIntent(contentIntent)
-                .setContent(contentView);
-
-        Notification notification = mBuilder.build();
-        //notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;
-
-       // notification2.defaults |= Notification.DEFAULT_SOUND;
-        //notification2.defaults |= Notification.DEFAULT_VIBRATE;
-       // notificationManager.notify(1, notification2);
-
-       /* Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_radio_black_24dp)        // the status icon
-                .setTicker("Radio running")           // the status text
-                .setWhen(System.currentTimeMillis())       // the time stamp
-                .setContentTitle("О'пять Радио")                 // the label of the entry
-                //.setContentText("Испольнитель - песня")      // the content of the entry
-                .setContentIntent(contentIntent)
-                .addAction(R.drawable.ic_close_black_24dp, "Stop", pendingIntentClose)// the intent to send when the entry is clicked
-                .setOngoing(true)                          // make persistent (disable swipe-away)
-                .build();*/
-
-        // Start service in foreground mode
-        startForeground(NOTIFICATION, notification);
+        runPlayer();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         giveUpAudioFocus();
-        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.STOP));
-        unregisterReceiver(connectionBroadcast);
         relaxRecourse();
+        unregisterReceiver(connectionBroadcast);
+        unregisterReceiver(notificationBroadcast);
         super.onDestroy();
     }
 
@@ -235,10 +251,11 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        isPrepare = false;
         tryToGetAudioFocus();
-        reConfigMediaPlayer();
-        EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.PLAY));
+        reConfigMediaPlayer(false);
+        stateRadio = PLAY;
+        updateNotification();
+        EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
     }
 
     @Override
@@ -247,7 +264,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         if (isPlaying && !isConnected) {
             resetPlayer();
         }
-        if (!isPlaying && isConnected && !isPrepare) {
+        if (!isPlaying && isConnected && stateRadio != BUFFERING) {
             runPlayer();
         }
     }
@@ -255,14 +272,14 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     @Override
     public void onGainedAudioFocus() {
         mAudioFocus = AudioFocus.Focused;
-            reConfigMediaPlayer();
+            reConfigMediaPlayer(false);
     }
 
     @Override
     public void onLostAudioFocus(boolean canDuck) {
         mAudioFocus = canDuck ? AudioFocus.NoFocusCanDuck : AudioFocus.NoFocusNoDuck;
         if (player != null && player.isPlaying()) {
-            reConfigMediaPlayer();
+            reConfigMediaPlayer(false);
         }
     }
 
@@ -272,16 +289,17 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         switch (what) {
             case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                 Log.d(TAG, "BUFFERING_1");
-                EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.BUFFERING));
+                stateRadio = BUFFERING;
+                EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
                 break;
             case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                 Log.d(TAG, "BUFFERING_0");
-                EventBus.getDefault().postSticky(new RadioStateEvent(RadioStateEvent.SateEnum.PLAY));
+                stateRadio = PLAY;
+                EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
                 break;
         }
             return false;
     }
-
 
     class MyBinder extends Binder {
         RadioService getService() {
