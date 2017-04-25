@@ -9,15 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ultim.radio5.AppConstant;
@@ -26,10 +25,8 @@ import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static com.example.ultim.radio5.Pojo.RadioStateEvent.*;
 import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.*;
@@ -44,6 +41,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     private NotificationManager notificationManager = null;
     Notification radioNotification;
     RemoteViews views;
+    RemoteViews expandedViews;
     public static SateEnum stateRadio = STOP;
     MediaPlayer player;
     private WifiManager.WifiLock mWifiLock;
@@ -71,7 +69,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     void showNotification(){
         views = new RemoteViews(getPackageName(),
-                R.layout.custom_push);
+                R.layout.radio_push);
+        expandedViews = new RemoteViews(getPackageName(), R.layout.radio_push_expanded);
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // Select action
         Intent notificationIntent = new Intent(this, NavigationDrawerActivity.class);
@@ -85,14 +84,19 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         closeNotificationIntent.setAction(AppConstant.ACTION.STOPFOREGROUND_ACTION);
         PendingIntent pendingIntentClose = PendingIntent.getBroadcast(getBaseContext(), 2, closeNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.button_close, pendingIntentClose);
+        expandedViews.setOnClickPendingIntent(R.id.button_close, pendingIntentClose);
         // Play action
         Intent playNotificationIntent = new Intent(AppConstant.ACTION.PLAY_ACTION);
         PendingIntent pendingIntentPlay = PendingIntent.getBroadcast(getBaseContext(), 1, playNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.button_play_push, pendingIntentPlay);
+        expandedViews.setOnClickPendingIntent(R.id.button_play_push, pendingIntentPlay);
 
-        views.setTextViewText(R.id.titlePush, "Исполнитель: Название трека");
+        views.setTextViewText(R.id.singer, "Исполнитель: Название трека");
+        expandedViews.setTextViewText(R.id.singer, "Исполнитель: Название трека");
+
         radioNotification = new Notification.Builder(this).build();
         radioNotification.contentView = views;
+        //radioNotification.bigContentView = expandedViews;
         radioNotification.flags = Notification.FLAG_ONGOING_EVENT;
         radioNotification.icon = R.drawable.ic_radio_black_24dp;
         radioNotification.contentIntent = pendingSelectIntent;
@@ -102,8 +106,10 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     private void updateNotification(){
         if (RadioService.stateRadio != PLAY){
             views.setInt(R.id.button_play_push, "setBackgroundResource", R.mipmap.play_ic);
+            expandedViews.setInt(R.id.button_play_push, "setBackgroundResource", R.mipmap.play_ic);
         } else {
             views.setInt(R.id.button_play_push, "setBackgroundResource", R.mipmap.pause_ic);
+            expandedViews.setInt(R.id.button_play_push, "setBackgroundResource", R.mipmap.pause_ic);
         }
         notificationManager.notify(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification);
     }

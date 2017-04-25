@@ -162,24 +162,24 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     private void changeState(RadioStateEvent.SateEnum inputState){
         state = inputState;
         if (state == RadioStateEvent.SateEnum.STOP) {
-            playButtonImageView.setImageResource(R.drawable.btn_pause_active);
+            playButtonImageView.setImageResource(R.drawable.play_button_selector);
             equalizerView.stopBars();
             equalizerView.setVisibility(View.INVISIBLE);
         }
         if (state == RadioStateEvent.SateEnum.BUFFERING) {
-            playButtonImageView.setImageResource(R.drawable.btn_pause_active);
+            playButtonImageView.setImageResource(R.drawable.stop_button_selector);
             equalizerView.stopBars();
             equalizerView.setVisibility(View.INVISIBLE);
         }
         if (state == RadioStateEvent.SateEnum.PLAY) {
 
-            playButtonImageView.setImageResource(R.drawable.btn_pause_inactive);
+            playButtonImageView.setImageResource(R.drawable.stop_button_selector);
             equalizerView.animateBars();
             equalizerView.setVisibility(View.VISIBLE);
         }
         if (state == RadioStateEvent.SateEnum.PAUSE) {
 
-            playButtonImageView.setImageResource(R.drawable.btn_pause_active);
+            playButtonImageView.setImageResource(R.drawable.play_button_selector);
             equalizerView.animateBars();
             equalizerView.setVisibility(View.VISIBLE);
         }

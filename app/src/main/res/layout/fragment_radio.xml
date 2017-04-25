@@ -30,7 +30,8 @@
             android:id="@+id/content_play_btn"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            android:src="@drawable/btn_play_inactive"
+            android:src="@drawable/play_button_selector"
+
             android:layout_gravity="center_horizontal"
             android:paddingTop="30dp"/>
 
