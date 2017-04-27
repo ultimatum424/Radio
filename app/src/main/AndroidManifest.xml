@@ -18,6 +18,7 @@
 
         tools:replace="android:allowBackup">
         <activity
+            android:configChanges="keyboardHidden|orientation"
             android:name=".MainActivity"
             android:launchMode="singleTask">
             <intent-filter>
@@ -46,6 +47,7 @@
 
         <activity
             android:name=".NavigationDrawerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_navigation_drawer"
             android:theme="@style/testTeheme"></activity>
     </application>
