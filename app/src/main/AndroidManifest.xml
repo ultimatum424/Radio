@@ -17,16 +17,6 @@
         android:theme="@style/testTeheme"
 
         tools:replace="android:allowBackup">
-        <activity
-            android:configChanges="keyboardHidden|orientation"
-            android:name=".MainActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name=".Radio.RadioService"
@@ -48,8 +38,14 @@
         <activity
             android:name=".NavigationDrawerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/title_activity_navigation_drawer"
-            android:theme="@style/testTeheme"></activity>
+            android:label="@string/app_name"
+            android:theme="@style/testTeheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

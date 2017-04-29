@@ -1,11 +1,15 @@
 package com.example.ultim.radio5.Fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +43,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM2 = "param2";
     EqualizerView equalizerView;
     RadioStateEvent.SateEnum state = RadioStateEvent.SateEnum.STOP;
+    ProgressDialog progressDialog;
 
     // TODO: Rename and change types of parameters
     private String mParam1; //university-name
@@ -90,7 +95,10 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         equalizerView.setVisibility(View.INVISIBLE);
         EventBus.getDefault().register(this);
         playButtonImageView.setOnClickListener(this);
-
+        progressDialog = new ProgressDialog(getActivity());
+        SpannableString ss2=  new SpannableString("Buffering");
+        ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+        progressDialog.setMessage("Buffering");
         return rootView;
     }
 
@@ -153,8 +161,16 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         }
         else {
             // Start service
-            Intent intent = new Intent(getActivity(), RadioService.class);
-            getActivity().startService(intent);
+            Thread t = new Thread(){
+                public void run(){
+                    getContext().startService(new Intent(getActivity(), RadioService.class));
+                    //Intent intent = new Intent(getActivity(), RadioService.class);
+                   // getActivity().startService(intent);
+                }
+            };
+            t.start();
+           // Intent intent = new Intent(getActivity(), RadioService.class);
+          //  getActivity().startService(intent);
         }
 
     }
@@ -165,23 +181,33 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
             playButtonImageView.setImageResource(R.drawable.play_button_selector);
             equalizerView.stopBars();
             equalizerView.setVisibility(View.INVISIBLE);
+            if (progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
         }
         if (state == RadioStateEvent.SateEnum.BUFFERING) {
             playButtonImageView.setImageResource(R.drawable.stop_button_selector);
             equalizerView.stopBars();
-            equalizerView.setVisibility(View.INVISIBLE);
+            equalizerView.setVisibility(View.INVISIBLE);;
+            progressDialog.show();
         }
         if (state == RadioStateEvent.SateEnum.PLAY) {
 
             playButtonImageView.setImageResource(R.drawable.stop_button_selector);
             equalizerView.animateBars();
             equalizerView.setVisibility(View.VISIBLE);
+            if (progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
         }
         if (state == RadioStateEvent.SateEnum.PAUSE) {
 
             playButtonImageView.setImageResource(R.drawable.play_button_selector);
             equalizerView.animateBars();
-            equalizerView.setVisibility(View.VISIBLE);
+            equalizerView.setVisibility(View.INVISIBLE);
+            if (progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
         }
     }
 

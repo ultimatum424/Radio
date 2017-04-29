@@ -3,6 +3,7 @@ package com.example.ultim.radio5.Radio;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -45,7 +47,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     public static SateEnum stateRadio = STOP;
     MediaPlayer player;
     private WifiManager.WifiLock mWifiLock;
-
+    ProgressDialog dialog;
     private final BroadcastReceiver connectionBroadcast = new ConnectivityReceiver();
     private final BroadcastReceiver notificationBroadcast = new NotificationRadioReceiver();
     private final IBinder mBinder = new MyBinder();
@@ -94,12 +96,21 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         views.setTextViewText(R.id.singer, "Исполнитель: Название трека");
         expandedViews.setTextViewText(R.id.singer, "Исполнитель: Название трека");
 
-        radioNotification = new Notification.Builder(this).build();
-        radioNotification.contentView = views;
+        radioNotification = new NotificationCompat.Builder(this)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle(getResources().getString(R.string.app_name))
+                .setContent(views)
+                //.setCustomBigContentView(expandedViews)
+                .setSmallIcon(R.drawable.ic_radio_black_24dp)
+                .setContentIntent(pendingSelectIntent)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .build();
+      //  radioNotification.contentView = views;
         //radioNotification.bigContentView = expandedViews;
-        radioNotification.flags = Notification.FLAG_ONGOING_EVENT;
-        radioNotification.icon = R.drawable.ic_radio_black_24dp;
-        radioNotification.contentIntent = pendingSelectIntent;
+       // radioNotification.flags = Notification.FLAG_ONGOING_EVENT;
+      //  radioNotification.icon = R.drawable.ic_radio_black_24dp;
+      //  radioNotification.contentIntent = pendingSelectIntent;
         startForeground(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification);
     }
 
@@ -182,6 +193,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         if (!player.isPlaying()) {
             player.start();
             stateRadio = PLAY;
+            updateNotification();
             EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
         }
 
@@ -215,7 +227,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         runPlayer();
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

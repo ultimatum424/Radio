@@ -43,7 +43,7 @@
         <item name="android:textColor">#ffffffff</item>
     </style>
 
-    <style name="testTeheme" parent="NewTheme" >
+    <style name="testTeheme" parent="Theme.AppCompat.NoActionBar" >
         <item name="colorPrimary">#FFFFFF</item>
         <item name="colorAccent">#303030</item>
         <item name="colorPrimaryDark">#303030</item>

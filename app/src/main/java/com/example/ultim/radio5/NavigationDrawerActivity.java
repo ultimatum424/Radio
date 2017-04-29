@@ -30,6 +30,8 @@ import com.example.ultim.radio5.Fragment.FragmentRadio;
 import com.example.ultim.radio5.Fragment.FragmentGenre;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
+import com.example.ultim.radio5.Pojo.RadioStateEvent;
+import com.example.ultim.radio5.Radio.RadioService;
 import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UnivesityListAdapter;
 
@@ -157,6 +159,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
 
         initContent("init");
+        if (RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
+            onUniversitySelect(0);
+        }
     }
 
     @Override

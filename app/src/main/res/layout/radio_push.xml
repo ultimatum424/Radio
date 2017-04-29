@@ -12,6 +12,7 @@
         android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
         android:src="@drawable/push_ic" />
 
     <RelativeLayout
@@ -39,21 +40,25 @@
 
             <TextView
                 android:id="@+id/singer"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:scrollHorizontally="true"
                 android:text="Исполнитель"
                 android:textColor="#000"
-                android:textSize="13dp" />
+                android:gravity="center_vertical"
+                android:textSize="15dp" />
 
             <TextView
                 android:id="@+id/song"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Композиция"
                 android:textColor="#000"
-                android:textSize="13dp" />
+                android:gravity="center_vertical"
+                android:textSize="15dp" />
         </LinearLayout>
 
 
