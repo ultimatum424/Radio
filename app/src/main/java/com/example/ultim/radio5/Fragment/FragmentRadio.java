@@ -3,6 +3,7 @@ package com.example.ultim.radio5.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -83,6 +84,21 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mParam1);
         }
+        EventBus.getDefault().register(this);
+    }
+
+    View initView(View rootView){
+        playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
+        equalizerView = (EqualizerView) rootView.findViewById(R.id.equalaizer);
+        equalizerView.setVisibility(View.INVISIBLE);
+        playButtonImageView.setOnClickListener(this);
+        if (progressDialog == null){
+            progressDialog = new ProgressDialog(getActivity());
+            SpannableString ss2=  new SpannableString("Buffering");
+            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+            progressDialog.setMessage("Buffering");
+        }
+        return rootView;
     }
 
     @Override
@@ -90,16 +106,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_radio, container, false);
-        playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
-        equalizerView = (EqualizerView) rootView.findViewById(R.id.equalaizer);
-        equalizerView.setVisibility(View.INVISIBLE);
-        EventBus.getDefault().register(this);
-        playButtonImageView.setOnClickListener(this);
-        progressDialog = new ProgressDialog(getActivity());
-        SpannableString ss2=  new SpannableString("Buffering");
-        ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-        progressDialog.setMessage("Buffering");
-        return rootView;
+        return initView(rootView);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -109,7 +116,22 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         }
     }
 
-//    @Override
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        populateViewForOrientation(inflater, (ViewGroup) getView());
+    }
+
+    private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+        viewGroup.removeAllViewsInLayout();
+        View subview = inflater.inflate(R.layout.fragment_radio, viewGroup);
+        subview = initView(subview);
+        changeState(state);
+
+    }
+
+    //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
 //        if (context instanceof OnFragmentInteractionListener) {
@@ -129,7 +151,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        replacePlayButton();
+        startStopRadio();
     }
 
     /**
@@ -147,7 +169,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void replacePlayButton() {
+    private void startStopRadio() {
         if (state == RadioStateEvent.SateEnum.PAUSE){
             EventBus.getDefault().post("start");
         }
