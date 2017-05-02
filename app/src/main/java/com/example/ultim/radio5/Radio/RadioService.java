@@ -53,6 +53,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     private final IBinder mBinder = new MyBinder();
     AudioFocusHelper mAudioFocusHelper = null;
     AudioManager mAudioManager;
+    public static String title;
+    private String url;
 
     @Override
     public void NotificationListener(String action) {
@@ -137,7 +139,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     private void runPlayer() {
 
         try {
-           player.setDataSource("http://217.22.172.49:8000/o5radio");
+           player.setDataSource(url);
         } catch (IOException e) {
             e.printStackTrace();
             relaxRecourse();
@@ -226,6 +228,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        title = intent.getStringExtra("title");
+        url = intent.getStringExtra("url");
         runPlayer();
         return START_NOT_STICKY;
     }

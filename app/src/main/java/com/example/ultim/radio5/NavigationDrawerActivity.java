@@ -1,5 +1,6 @@
 package com.example.ultim.radio5;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -246,7 +247,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         drawer.closeDrawers();
     }
 
-    class OKHttpRequest extends AsyncTask<Void, Void, Void>{
+    private class OKHttpRequest extends AsyncTask<Void, Void, Void>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -263,7 +264,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             String request = fileManager.doGetRequest(AppConstant.ULR_STATIONS);
             fileManager.saveFile(request, AppConstant.FILE_STATIONS);
             //universityItems = fileManager.getListUniversity();
-            return null;
+            return(null);
         }
     }
 }

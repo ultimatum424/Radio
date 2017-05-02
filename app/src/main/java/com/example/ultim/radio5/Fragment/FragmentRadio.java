@@ -26,6 +26,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import eu.gsottbauer.equalizerview.EqualizerView;
 
 
@@ -84,7 +87,6 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mParam1);
         }
-        EventBus.getDefault().register(this);
     }
 
     View initView(View rootView){
@@ -106,7 +108,9 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_radio, container, false);
-        return initView(rootView);
+        rootView = initView(rootView);
+        EventBus.getDefault().register(this);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -170,36 +174,83 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     }
 
     private void startStopRadio() {
-        if (state == RadioStateEvent.SateEnum.PAUSE){
-            EventBus.getDefault().post("start");
-        }
-        if( RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
-            // Stop service
-            Intent intent = new Intent(getActivity(), RadioService.class);
-            //stopService(intent);
-            getActivity().stopService(intent);
-            equalizerView.stopBars();
-            equalizerView.setVisibility(View.INVISIBLE);
-        }
-        else {
-            // Start service
-            Thread t = new Thread(){
-                public void run(){
-                    getContext().startService(new Intent(getActivity(), RadioService.class));
-                    //Intent intent = new Intent(getActivity(), RadioService.class);
-                   // getActivity().startService(intent);
-                }
-            };
-            t.start();
-           // Intent intent = new Intent(getActivity(), RadioService.class);
-          //  getActivity().startService(intent);
-        }
+        if (Objects.equals(mParam1, RadioService.title)){
+            if (state == RadioStateEvent.SateEnum.PAUSE){
+                EventBus.getDefault().post("start");
+            }
 
+            if( RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
+                stopService();
+            }
+
+            else {
+                runService();
+            }
+        } else {
+            if( RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
+                stopService();
+            }
+            runService();
+        }
+    }
+
+    private void runService(){
+        // Start service
+        Thread t = new Thread(){
+            public void run(){
+                Intent intent = new Intent(getActivity(), RadioService.class);
+                intent.putExtra("title", mParam1);
+                intent.putExtra("url", "http://217.22.172.49:8000/o5radio");
+                getContext().startService(intent);
+            }
+        };
+        t.start();
+    }
+    private void stopService(){
+        // Stop service
+        Intent intent = new Intent(getActivity(), RadioService.class);
+        getActivity().stopService(intent);
+        equalizerView.stopBars();
+        equalizerView.setVisibility(View.INVISIBLE);
     }
 
     private void changeState(RadioStateEvent.SateEnum inputState){
-        state = inputState;
-        if (state == RadioStateEvent.SateEnum.STOP) {
+        if (Objects.equals(RadioService.title, mParam1))
+        {
+            state = inputState;
+            if (state == RadioStateEvent.SateEnum.STOP) {
+                playButtonImageView.setImageResource(R.drawable.play_button_selector);
+                equalizerView.stopBars();
+                equalizerView.setVisibility(View.INVISIBLE);
+                if (progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
+            }
+            if (state == RadioStateEvent.SateEnum.BUFFERING) {
+                playButtonImageView.setImageResource(R.drawable.stop_button_selector);
+                equalizerView.stopBars();
+                equalizerView.setVisibility(View.INVISIBLE);;
+                progressDialog.show();
+            }
+            if (state == RadioStateEvent.SateEnum.PLAY) {
+
+                playButtonImageView.setImageResource(R.drawable.stop_button_selector);
+                equalizerView.animateBars();
+                equalizerView.setVisibility(View.VISIBLE);
+                if (progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
+            }
+            if (state == RadioStateEvent.SateEnum.PAUSE) {
+
+                playButtonImageView.setImageResource(R.drawable.play_button_selector);
+                equalizerView.animateBars();
+                equalizerView.setVisibility(View.INVISIBLE);
+                if (progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
+            }
+        } else {
             playButtonImageView.setImageResource(R.drawable.play_button_selector);
             equalizerView.stopBars();
             equalizerView.setVisibility(View.INVISIBLE);
@@ -207,30 +258,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
                 progressDialog.dismiss();
             }
         }
-        if (state == RadioStateEvent.SateEnum.BUFFERING) {
-            playButtonImageView.setImageResource(R.drawable.stop_button_selector);
-            equalizerView.stopBars();
-            equalizerView.setVisibility(View.INVISIBLE);;
-            progressDialog.show();
-        }
-        if (state == RadioStateEvent.SateEnum.PLAY) {
 
-            playButtonImageView.setImageResource(R.drawable.stop_button_selector);
-            equalizerView.animateBars();
-            equalizerView.setVisibility(View.VISIBLE);
-            if (progressDialog.isShowing()){
-                progressDialog.dismiss();
-            }
-        }
-        if (state == RadioStateEvent.SateEnum.PAUSE) {
-
-            playButtonImageView.setImageResource(R.drawable.play_button_selector);
-            equalizerView.animateBars();
-            equalizerView.setVisibility(View.INVISIBLE);
-            if (progressDialog.isShowing()){
-                progressDialog.dismiss();
-            }
-        }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
