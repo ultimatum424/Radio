@@ -61,7 +61,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
     ArrayList<GenreItem> musicGengres;  //жанры музыки
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +95,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
         });
 
+
         musicGengres = new ArrayList<GenreItem>();
         musicGengres.add(new GenreItem("Rock"));
         musicGengres.add(new GenreItem("Pop"));
@@ -112,6 +112,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         });
         nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
         nav_menu_searchView.setIconified(false);
+        nav_menu_searchView.setVisibility(universityData.isSearchViewNeeded() ? View.VISIBLE : View.GONE);
+
         nav_menu_searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -157,7 +159,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         //universityData.loadData();
-
     }
 
 
