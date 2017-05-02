@@ -45,7 +45,7 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:scrollHorizontally="true"
-                android:text="Исполнитель"
+                android:text="Радиостанция"
                 android:textColor="#000"
                 android:gravity="center_vertical"
                 android:textSize="15dp" />

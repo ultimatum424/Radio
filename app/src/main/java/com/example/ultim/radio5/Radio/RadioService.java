@@ -95,24 +95,22 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         views.setOnClickPendingIntent(R.id.button_play_push, pendingIntentPlay);
         expandedViews.setOnClickPendingIntent(R.id.button_play_push, pendingIntentPlay);
 
-        views.setTextViewText(R.id.singer, "Исполнитель: Название трека");
-        expandedViews.setTextViewText(R.id.singer, "Исполнитель: Название трека");
+        views.setTextViewText(R.id.singer, title);
+        expandedViews.setTextViewText(R.id.singer, title);
+
+        views.setTextViewText(R.id.song, "Исполнитель: Название трека");
+        expandedViews.setTextViewText(R.id.song, "Исполнитель: Название трека");
 
         radioNotification = new NotificationCompat.Builder(this)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(getResources().getString(R.string.app_name))
                 .setContent(views)
-                //.setCustomBigContentView(expandedViews)
+                .setCustomBigContentView(expandedViews)
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
                 .setContentIntent(pendingSelectIntent)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .build();
-      //  radioNotification.contentView = views;
-        //radioNotification.bigContentView = expandedViews;
-       // radioNotification.flags = Notification.FLAG_ONGOING_EVENT;
-      //  radioNotification.icon = R.drawable.ic_radio_black_24dp;
-      //  radioNotification.contentIntent = pendingSelectIntent;
         startForeground(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification);
     }
 
