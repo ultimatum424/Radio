@@ -153,6 +153,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         if (RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
             onUniversitySelect(0);
         }
+        initRadioIfStreaming();
     }
 
     @Override
@@ -241,7 +242,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
            ft.commit();
        }
        drawer.closeDrawers();
+    }
 
+    private void initRadioIfStreaming() {
+        if(RadioService.title != null) {
+            UniversityItem current = universityData.findItemByTitle(RadioService.title);
+            Fragment fragment = FragmentRadio.newInstance(current.getName(), current.getStream());
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.content_container, fragment);
+            ft.commit();
+        }
     }
 
     @Override
