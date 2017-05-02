@@ -143,6 +143,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 }
             }
         });
+        nav_menu_switch.setVisibility(View.INVISIBLE);
 
 
         ImageView settings = (ImageView) findViewById(R.id.settingsImageView);
