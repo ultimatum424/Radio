@@ -1,6 +1,5 @@
 package com.example.ultim.radio5;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,6 +33,7 @@ import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.Radio.RadioService;
+import com.example.ultim.radio5.Univesity.UniversityData;
 import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UnivesityListAdapter;
 
@@ -45,6 +45,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     NavigationView navigationView;
     ListView universityListView;
     UnivesityListAdapter univesityListAdapter;
+
     Switch nav_menu_switch;
     SearchView nav_menu_searchView;
     LinearLayout nav_menu_settingsLayout;
@@ -56,7 +57,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     ListView genreListView;
     GenreListAdapter genreListAdapter;
 
-    ArrayList<UniversityItem> universityItems;
+    UniversityData universityData;
     ArrayList<GenreItem> musicGengres;  //жанры музыки
 
 
@@ -80,17 +81,13 @@ public class NavigationDrawerActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        universityItems = new ArrayList<UniversityItem>();
-        universityItems.add(new UniversityItem("Volgatech", ""));
-        universityItems.add(new UniversityItem("MarSU", ""));
-        universityItems.add(new UniversityItem("MOSI", ""));
-
         onlineContent = (LinearLayout) findViewById(R.id.online_content);
         offlineContent = (LinearLayout) findViewById(R.id.offline_content);
         networkStatusTextBox = (TextView) findViewById(R.id.menu_network_status_item);
 
+        universityData = new UniversityData(this);
         universityListView = (ListView) findViewById(R.id.menu_university_list_view);
-        univesityListAdapter = new UnivesityListAdapter(universityItems, this);
+        univesityListAdapter = new UnivesityListAdapter(universityData.getItems(), this);
         universityListView.setAdapter(univesityListAdapter);
         universityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -157,6 +154,21 @@ public class NavigationDrawerActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //universityData.loadData();
+
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        universityData.saveData();
+
+    }
+
+    @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -204,7 +216,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
        if(univesityListAdapter.onSelect(position)) {
 
-           Fragment fragment = FragmentRadio.newInstance(univesityListAdapter.getCurrent().getName());
+           UniversityItem current = univesityListAdapter.getCurrent();
+           Fragment fragment = FragmentRadio.newInstance(current.getName(), current.getStream());
            FragmentManager fm = getSupportFragmentManager();
            FragmentTransaction ft = fm.beginTransaction();
            ft.replace(R.id.content_container, fragment);

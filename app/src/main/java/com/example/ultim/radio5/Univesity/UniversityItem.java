@@ -25,6 +25,7 @@ public class UniversityItem {
     public void setSelected(boolean selected) {
         isSelected = selected;
     }
+
     public void changeSelectedStatus() {
         isSelected = !isSelected;
     }

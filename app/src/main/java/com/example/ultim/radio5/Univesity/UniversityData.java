@@ -15,17 +15,24 @@ import java.util.Objects;
 
 import static com.example.ultim.radio5.AppConstant.UNIVERSITY_LIST_MINIMAL_LENGTH_TO_SEARCH;
 
-public class UniversityModel {
+public class UniversityData {
     ArrayList<UniversityItem> items;
     Context context;
     FileManager fileManager;
     Gson gson;
 
-    public UniversityModel(Context context) {
-        items = new ArrayList<>();
-        loadData();
+    public UniversityData(Context context) {
+        items = new ArrayList<UniversityItem>();
+        items.add(new UniversityItem("Volgatech", ""));
+        items.add(new UniversityItem("MarSU", ""));
+        items.add(new UniversityItem("MOSI", ""));
+
+        this.context = context;
         fileManager = new FileManager(context);
+
         gson = new Gson();
+        loadData();
+
     }
 
     public void loadData() {

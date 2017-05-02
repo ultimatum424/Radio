@@ -51,6 +51,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
 
     // TODO: Rename and change types of parameters
     private String mParam1; //university-name
+    private String mParam2; //
 
     private OnFragmentInteractionListener mListener;
 
@@ -71,10 +72,11 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
      * @return A new instance of fragment FragmentRadio.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentRadio newInstance(String param1) {
+    public static FragmentRadio newInstance(String param1, String param2) {
         FragmentRadio fragment = new FragmentRadio();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -85,6 +87,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mParam1);
         }
     }
