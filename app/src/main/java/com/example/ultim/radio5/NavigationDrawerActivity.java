@@ -217,7 +217,20 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
        if(univesityListAdapter.onSelect(position)) {
 
-           UniversityItem current = univesityListAdapter.getCurrent();
+
+           //UniversityItem current = univesityListAdapter.getCurrent();
+           UniversityItem current;
+           if(RadioService.title == null ) {
+               current = univesityListAdapter.getCurrent();
+           }
+           else {
+               current = universityData.findItemByTitle(RadioService.title);
+               if(current == null) {
+                   //ERROR
+                   throw new IllegalArgumentException("title != title not found in arraylist");
+               }
+           }
+
            Fragment fragment = FragmentRadio.newInstance(current.getName(), current.getStream());
            FragmentManager fm = getSupportFragmentManager();
            FragmentTransaction ft = fm.beginTransaction();

@@ -60,4 +60,13 @@ public class UniversityData {
     public void setItems(ArrayList<UniversityItem> items) {
         this.items = items;
     }
+
+    public UniversityItem findItemByTitle(String pattern) {
+        for(UniversityItem item : items) {
+            if (item.getName().equals(pattern)) {
+                return item;
+            }
+        }
+        return null;
+    }
 }
