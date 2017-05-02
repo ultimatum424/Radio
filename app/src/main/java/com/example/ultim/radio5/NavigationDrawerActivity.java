@@ -81,9 +81,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
 
         universityItems = new ArrayList<UniversityItem>();
-//        universityItems.add(new GenreItem("Волгатех"));
-//        universityItems.add(new GenreItem("МарГУ"));
-//        universityItems.add(new GenreItem("МОСИ"));
         universityItems.add(new UniversityItem("Volgatech", ""));
         universityItems.add(new UniversityItem("MarSU", ""));
         universityItems.add(new UniversityItem("MOSI", ""));
@@ -148,12 +145,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
         });
 
-//        musicGenresGroup = (RadioGroup) findViewById(R.id.music_genres_group);
-//        for(String genre : musicGengres){
-//            RadioButton b = new RadioButton(this);
-//            b.setText(genre);
-//            musicGenresGroup.addView(b); //the RadioButtons are added to the radioGroup instead of the layout
-//        }
 
         ImageView settings = (ImageView) findViewById(R.id.settingsImageView);
         settings.setColorFilter(Color.WHITE);
