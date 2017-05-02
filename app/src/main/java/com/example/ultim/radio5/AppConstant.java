@@ -19,6 +19,8 @@ public class AppConstant {
     }
 
     public static final String FILE_STATIONS = "list_stations";
+    public static final String ULR_STATIONS = "http://www.mocky.io/v2/5908385f250000630659e7bc";
+
 }
 
 

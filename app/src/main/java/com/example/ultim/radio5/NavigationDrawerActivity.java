@@ -2,6 +2,7 @@ package com.example.ultim.radio5;
 
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -82,9 +83,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
 //        universityItems.add(new GenreItem("Волгатех"));
 //        universityItems.add(new GenreItem("МарГУ"));
 //        universityItems.add(new GenreItem("МОСИ"));
-        universityItems.add(new UniversityItem("Volgatech"));
-        universityItems.add(new UniversityItem("MarSU"));
-        universityItems.add(new UniversityItem("MOSI"));
+        universityItems.add(new UniversityItem("Volgatech", ""));
+        universityItems.add(new UniversityItem("MarSU", ""));
+        universityItems.add(new UniversityItem("MOSI", ""));
 
         onlineContent = (LinearLayout) findViewById(R.id.online_content);
         offlineContent = (LinearLayout) findViewById(R.id.offline_content);
@@ -243,5 +244,26 @@ public class NavigationDrawerActivity extends AppCompatActivity
         ft.replace(R.id.content_container, fragment);
         ft.commit();
         drawer.closeDrawers();
+    }
+
+    class OKHttpRequest extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            FileManager fileManager = new FileManager(getApplication());
+            String request = fileManager.doGetRequest(AppConstant.ULR_STATIONS);
+            fileManager.saveFile(request, AppConstant.FILE_STATIONS);
+            //universityItems = fileManager.getListUniversity();
+            return null;
+        }
     }
 }

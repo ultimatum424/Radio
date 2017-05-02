@@ -2,6 +2,7 @@ package com.example.ultim.radio5;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ultim.radio5.Univesity.UniversityItem;
@@ -18,6 +19,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * Created by Ultim on 02.05.2017.
  */
@@ -30,7 +38,7 @@ public class FileManager {
         this.context = context;
     }
 
-    private void saveFile(String object, String fileName){
+    public void saveFile(String object, String fileName){
         FileOutputStream outputStream = null;
         try {
             outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -48,7 +56,7 @@ public class FileManager {
         }
     }
 
-    private String openFile(String fileName){
+    public String openFile(String fileName){
         FileInputStream fileInputStream = null;
         String json = "";
         try {
@@ -93,4 +101,21 @@ public class FileManager {
         String jsonString  = gson.toJson(universityItems);
         saveFile(jsonString, AppConstant.FILE_STATIONS);
     }
+
+
+    public String doGetRequest(String url) {
+        OkHttpClient client = new OkHttpClient();
+        String str = "";
+        Request request = new Request.Builder()
+                .url("http://publicobject.com/helloworld.txt")
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            str = response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+
 }
