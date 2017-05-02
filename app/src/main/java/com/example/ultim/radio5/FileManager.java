@@ -85,24 +85,6 @@ public class FileManager {
 
     }
 
-    public ArrayList<UniversityItem> getListUniversity(){
-        ArrayList<UniversityItem> universityItems = new ArrayList<UniversityItem>();
-        String jsonString = openFile(AppConstant.FILE_STATIONS);
-        if (!Objects.equals(jsonString, "")){
-            Gson gson = new Gson();
-            Type listType = new TypeToken<ArrayList<UniversityItem>>(){}.getType();
-            universityItems = gson.fromJson(jsonString, listType);
-        }
-        return universityItems;
-    }
-
-    public void saveListUniversity(ArrayList<UniversityItem> universityItems){
-        Gson gson = new Gson();
-        String jsonString  = gson.toJson(universityItems);
-        saveFile(jsonString, AppConstant.FILE_STATIONS);
-    }
-
-
     public String doGetRequest(String url) {
         OkHttpClient client = new OkHttpClient();
         String str = "";
