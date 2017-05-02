@@ -16,20 +16,14 @@ import java.util.Objects;
 import static com.example.ultim.radio5.AppConstant.UNIVERSITY_LIST_MINIMAL_LENGTH_TO_SEARCH;
 
 public class UniversityData {
-    ArrayList<UniversityItem> items;
-    Context context;
-    FileManager fileManager;
-    Gson gson;
+    private ArrayList<UniversityItem> items;
+    private FileManager fileManager;
+    private Gson gson;
+
 
     public UniversityData(Context context) {
         items = new ArrayList<UniversityItem>();
-        items.add(new UniversityItem("Volgatech", ""));
-        items.add(new UniversityItem("MarSU", ""));
-        items.add(new UniversityItem("MOSI", ""));
-
-        this.context = context;
         fileManager = new FileManager(context);
-
         gson = new Gson();
         loadData();
 
@@ -37,9 +31,15 @@ public class UniversityData {
 
     public void loadData() {
         String jsonString = fileManager.openFile(AppConstant.FILE_STATIONS);
+        //jsonString = "";
         if (!Objects.equals(jsonString, "")){
             Type listType = new TypeToken<ArrayList<UniversityItem>>(){}.getType();
             items = gson.fromJson(jsonString, listType);
+        }
+        else {
+
+          //  items.add(new UniversityItem("Волгатех", "http://217.22.172.49:8000/o5radio"));
+           // items.add(new UniversityItem("МарГУ", "http://217.22.172.49:8000/margu"));
         }
     }
 

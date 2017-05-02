@@ -38,6 +38,7 @@ import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UnivesityListAdapter;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentRadio.OnFragmentInteractionListener, FragmentGenre.OnFragmentInteractionListener {
@@ -83,7 +84,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         onlineContent = (LinearLayout) findViewById(R.id.online_content);
         offlineContent = (LinearLayout) findViewById(R.id.offline_content);
         networkStatusTextBox = (TextView) findViewById(R.id.menu_network_status_item);
-
+       // new OKHttpRequest().execute();
         universityData = new UniversityData(this);
         universityListView = (ListView) findViewById(R.id.menu_university_list_view);
         univesityListAdapter = new UnivesityListAdapter(universityData.getItems(), this);
@@ -151,9 +152,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
 
         initContent("init");
-        if (RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
-            onUniversitySelect(0);
-        }
         initRadioIfStreaming();
     }
 
@@ -263,10 +261,10 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
     private void initContent(String param) {
         Fragment fragment;
-        if(param == "init") {
+        if(Objects.equals(param, "init")) {
             fragment = new FragmentGreetings();
         }
-        else if (param == "other") {
+        else if (Objects.equals(param, "other")) {
             fragment = new FragmentRadio();
         }
         else {
@@ -294,9 +292,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void... params) {
             FileManager fileManager = new FileManager(getApplication());
-            String request = fileManager.doGetRequest(AppConstant.ULR_STATIONS);
+            String request = fileManager.getUrlResponse(AppConstant.ULR_STATIONS);
             fileManager.saveFile(request, AppConstant.FILE_STATIONS);
-            //universityItems = fileManager.getListUniversity();
             return(null);
         }
     }

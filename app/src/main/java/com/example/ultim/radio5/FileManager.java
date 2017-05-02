@@ -85,11 +85,11 @@ public class FileManager {
 
     }
 
-    public String doGetRequest(String url) {
+    public String getUrlResponse(String url) {
         OkHttpClient client = new OkHttpClient();
         String str = "";
         Request request = new Request.Builder()
-                .url("http://publicobject.com/helloworld.txt")
+                .url(url)
                 .build();
         try {
             Response response = client.newCall(request).execute();

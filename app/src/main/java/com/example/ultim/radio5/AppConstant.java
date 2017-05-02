@@ -19,7 +19,7 @@ public class AppConstant {
     }
 
     public static final String FILE_STATIONS = "list_stations";
-    public static final String ULR_STATIONS = "http://www.mocky.io/v2/5908385f250000630659e7bc";
+    public static final String ULR_STATIONS = "http://www.mocky.io/v2/5908709c250000150b59e865";
 
     public static final int UNIVERSITY_LIST_MINIMAL_LENGTH_TO_SEARCH = 10;
 }

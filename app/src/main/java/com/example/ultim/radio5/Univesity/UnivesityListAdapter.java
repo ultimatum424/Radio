@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class UnivesityListAdapter extends BaseAdapter {
         this.universityItems = items;
         this.layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
+
+
 
     @Override
     public int getCount() {
