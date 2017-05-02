@@ -17,6 +17,8 @@ public class AppConstant {
     public interface NOTIFICATION_ID {
         public static int FOREGROUND_SERVICE = 1;
     }
+
+    public static final String FILE_STATIONS = "list_stations";
 }
 
 

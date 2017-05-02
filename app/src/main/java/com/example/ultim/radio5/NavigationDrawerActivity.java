@@ -114,7 +114,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 onGenreSelect(position);
             }
         });
-
         nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
         nav_menu_searchView.setIconified(false);
         nav_menu_searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
