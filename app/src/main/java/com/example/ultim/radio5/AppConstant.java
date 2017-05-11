@@ -15,7 +15,7 @@ public class AppConstant {
 
     }
 
-    public enum eFragmentType{
+    public static enum FragmentType{
         GREETINGS,
         RADIO,
         MUSIC

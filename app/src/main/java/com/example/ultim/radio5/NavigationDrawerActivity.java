@@ -30,13 +30,14 @@ import com.example.ultim.radio5.Fragment.FragmentRadio;
 import com.example.ultim.radio5.Fragment.FragmentGenre;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
-import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.Radio.RadioService;
 import com.example.ultim.radio5.Univesity.UniversityData;
 import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UniversityListAdapter;
 
 import java.util.ArrayList;
+
+import static com.example.ultim.radio5.AppConstant.FragmentType.GREETINGS;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentRadio.OnFragmentInteractionListener, FragmentGenre.OnFragmentInteractionListener {
@@ -147,9 +148,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         });
 
 
-        //TODO : Rework for Enum
-        initContent("init");
-        // TODO : GO TO initContent
+        initFragment(GREETINGS);
+        // TODO : GO TO initFragment or else SM
         initRadioIfStreaming();
     }
 
@@ -257,18 +257,21 @@ public class NavigationDrawerActivity extends AppCompatActivity
         //empty body
     }
 
-    private void initContent(String param) {
+    private void initFragment(AppConstant.FragmentType eFragmentType) {
         Fragment fragment;
-        if(param == "init") {
-            fragment = new FragmentGreetings();
-        }
-        else if (param == "other") {
-            fragment = new FragmentRadio();
-        }
-        else {
-            fragment = new FragmentGenre();
-        }
+        switch (eFragmentType){
 
+            case GREETINGS:
+                fragment = new FragmentGreetings();
+                break;
+            case RADIO:
+                fragment = new FragmentRadio();
+                break;
+            case MUSIC: default:
+                fragment = new FragmentGenre();
+                break;
+
+        }
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);
