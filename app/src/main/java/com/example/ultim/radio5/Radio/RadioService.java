@@ -27,8 +27,11 @@ import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.example.ultim.radio5.Pojo.RadioStateEvent.*;
 import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.*;
@@ -222,6 +225,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         mWifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "Media Player Wi-Fi Lock");
         mWifiLock.acquire();
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -324,6 +328,13 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     class MyBinder extends Binder {
         RadioService getService() {
             return RadioService.this;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(String command) {
+        if (Objects.equals(command, "start")){
+            reConfigMediaPlayer(false);
         }
     }
 }

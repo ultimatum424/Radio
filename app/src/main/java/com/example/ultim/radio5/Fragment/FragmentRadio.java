@@ -1,7 +1,6 @@
 package com.example.ultim.radio5.Fragment;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -16,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.ultim.radio5.AppConstant;
-import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 import com.example.ultim.radio5.Radio.RadioService;
@@ -26,10 +23,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import eu.gsottbauer.equalizerview.EqualizerView;
+
+import static com.example.ultim.radio5.Pojo.RadioStateEvent.*;
+import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.*;
+import static com.example.ultim.radio5.Radio.RadioService.*;
 
 
 /**
@@ -46,18 +46,16 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     EqualizerView equalizerView;
-    RadioStateEvent.SateEnum state = RadioStateEvent.SateEnum.STOP;
+    SateEnum state = STOP;
     ProgressDialog progressDialog;
 
     // TODO: Rename and change types of parameters
-    private String mParam1; //university-name
-    private String mParam2; //
+    private String universityName;
+    private String universityUrl;
 
     private OnFragmentInteractionListener mListener;
 
     ImageView playButtonImageView;
-    String universityName = "Волгатех";
-
 
     public FragmentRadio() {
         // Required empty public constructor
@@ -86,9 +84,9 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mParam1);
+            universityName = getArguments().getString(ARG_PARAM1);
+            universityUrl = getArguments().getString(ARG_PARAM2);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(universityName);
         }
     }
 
@@ -99,9 +97,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         playButtonImageView.setOnClickListener(this);
         if (progressDialog == null){
             progressDialog = new ProgressDialog(getActivity());
-            SpannableString ss2=  new SpannableString("Buffering");
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            progressDialog.setMessage("Buffering");
+            progressDialog.setMessage(getString(R.string.buffering));
         }
         return rootView;
     }
@@ -132,28 +128,15 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
 
     private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
         viewGroup.removeAllViewsInLayout();
-        View subview = inflater.inflate(R.layout.fragment_radio, viewGroup);
-        subview = initView(subview);
+        View subview = initView(inflater.inflate(R.layout.fragment_radio, viewGroup));
         changeState(state);
 
     }
-
-    //    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        //((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Home");
     }
 
     @Override
@@ -177,20 +160,22 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     }
 
     private void startStopRadio() {
-        if (Objects.equals(mParam1, RadioService.title)){
-            if (state == RadioStateEvent.SateEnum.PAUSE){
+        if (Objects.equals(universityName, title)){
+
+            if (state == PAUSE){
                 EventBus.getDefault().post("start");
             }
 
-            if( RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
+            else if( stateRadio != STOP){
                 stopService();
             }
 
             else {
                 runService();
             }
+            //restart Service
         } else {
-            if( RadioService.stateRadio != RadioStateEvent.SateEnum.STOP){
+            if( stateRadio != STOP){
                 stopService();
             }
             runService();
@@ -202,8 +187,8 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         Thread t = new Thread(){
             public void run(){
                 Intent intent = new Intent(getActivity(), RadioService.class);
-                intent.putExtra("title", mParam1);
-                intent.putExtra("url", "http://217.22.172.49:8000/o5radio");
+                intent.putExtra("title", universityName);
+                intent.putExtra("url", universityUrl);
                 getContext().startService(intent);
             }
         };
@@ -217,51 +202,48 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         equalizerView.setVisibility(View.INVISIBLE);
     }
 
-    private void changeState(RadioStateEvent.SateEnum inputState){
-        if (Objects.equals(RadioService.title, mParam1))
-        {
+    private void changeState(SateEnum inputState) {
+        if (Objects.equals(title, universityName)) {
             state = inputState;
-            if (state == RadioStateEvent.SateEnum.STOP) {
+        } else {
+            state = STOP;
+        }
+
+        switch (state) {
+            case PAUSE:
                 playButtonImageView.setImageResource(R.drawable.play_button_selector);
-                equalizerView.stopBars();
+                equalizerView.animateBars();
                 equalizerView.setVisibility(View.INVISIBLE);
-                if (progressDialog.isShowing()){
+                if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-            }
-            if (state == RadioStateEvent.SateEnum.BUFFERING) {
-                playButtonImageView.setImageResource(R.drawable.stop_button_selector);
-                equalizerView.stopBars();
-                equalizerView.setVisibility(View.INVISIBLE);;
-                progressDialog.show();
-            }
-            if (state == RadioStateEvent.SateEnum.PLAY) {
+                break;
 
+            case PLAY:
                 playButtonImageView.setImageResource(R.drawable.stop_button_selector);
                 equalizerView.animateBars();
                 equalizerView.setVisibility(View.VISIBLE);
-                if (progressDialog.isShowing()){
+                if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-            }
-            if (state == RadioStateEvent.SateEnum.PAUSE) {
+                break;
 
-                playButtonImageView.setImageResource(R.drawable.play_button_selector);
-                equalizerView.animateBars();
+            case BUFFERING:
+                playButtonImageView.setImageResource(R.drawable.stop_button_selector);
+                equalizerView.stopBars();
                 equalizerView.setVisibility(View.INVISIBLE);
-                if (progressDialog.isShowing()){
+                progressDialog.show();
+                break;
+
+            case STOP: default:
+                playButtonImageView.setImageResource(R.drawable.play_button_selector);
+                equalizerView.stopBars();
+                equalizerView.setVisibility(View.INVISIBLE);
+                if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-            }
-        } else {
-            playButtonImageView.setImageResource(R.drawable.play_button_selector);
-            equalizerView.stopBars();
-            equalizerView.setVisibility(View.INVISIBLE);
-            if (progressDialog.isShowing()){
-                progressDialog.dismiss();
-            }
+                break;
         }
-
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
