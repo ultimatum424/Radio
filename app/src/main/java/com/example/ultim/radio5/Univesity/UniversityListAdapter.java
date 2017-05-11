@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
-public class UnivesityListAdapter extends BaseAdapter {
+public class UniversityListAdapter extends BaseAdapter {
     ArrayList<UniversityItem> universityItems;
     Context context;
     LayoutInflater layoutInflater;
@@ -23,7 +23,7 @@ public class UnivesityListAdapter extends BaseAdapter {
 
     UniversityItem current;
 
-    public UnivesityListAdapter(ArrayList<UniversityItem> items, Context context) {
+    public UniversityListAdapter(ArrayList<UniversityItem> items, Context context) {
         super();
         searchPattern = new String();
         this.universityItems = items;

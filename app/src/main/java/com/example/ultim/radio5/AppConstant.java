@@ -14,6 +14,12 @@ public class AppConstant {
         public static String STOPFOREGROUND_ACTION = "com.radio5.radionotification.action.stopforeground";
 
     }
+
+    public enum eFragmentType{
+        GREETINGS,
+        RADIO,
+        MUSIC
+    }
     public interface NOTIFICATION_ID {
         public static int FOREGROUND_SERVICE = 1;
     }
