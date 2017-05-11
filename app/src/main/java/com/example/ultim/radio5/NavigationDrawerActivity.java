@@ -59,24 +59,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
     UniversityData universityData;
     ArrayList<GenreItem> musicGenres;  //жанры музыки
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation_drawer);
-        // Toolbar
+    Toolbar initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
+        return toolbar;
+    }
 
-        //Navigation
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        //Navigation View
+    void initNavigationView(){
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         networkStatusTextBox = (TextView) findViewById(R.id.menu_network_status_item);
@@ -98,8 +88,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
         });
         ImageView settings = (ImageView) findViewById(R.id.settingsImageView);
         settings.setColorFilter(Color.WHITE);
+    }
 
-        //Online
+    void initOnlineContent(){
         onlineContent = (LinearLayout) findViewById(R.id.online_content);
         universityData = new UniversityData(this);
         universityListView = (ListView) findViewById(R.id.menu_university_list_view);
@@ -111,8 +102,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 onUniversitySelect(position);
             }
         });
+    }
 
-        //Offline
+    void initOfflineContent(){
         offlineContent = (LinearLayout) findViewById(R.id.offline_content);
         musicGenres = new ArrayList<GenreItem>();
         musicGenres.add(new GenreItem("Rock"));
@@ -128,8 +120,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 onGenreSelect(position);
             }
         });
+    }
 
-        //Search View
+    void initSearchView(){
         nav_menu_searchView = (SearchView) findViewById(R.id.nav_menu_search);
         nav_menu_searchView.setIconified(false);
         nav_menu_searchView.setVisibility(universityData.isSearchViewNeeded() ? View.VISIBLE : View.GONE);
@@ -146,8 +139,27 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 return false;
             }
         });
+    }
 
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_navigation_drawer);
+        Toolbar toolbar = initToolbar();
+
+        //Navigation
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        //Igniting elements
+        initNavigationView();
+        initOnlineContent();
+        initOfflineContent();
+        initSearchView();
         initFragment(GREETINGS);
         // TODO : GO TO initFragment or else SM
         initRadioIfStreaming();
