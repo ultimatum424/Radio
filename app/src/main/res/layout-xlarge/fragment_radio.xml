@@ -6,6 +6,8 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.ultim.radio5.NavigationDrawerActivity"
     android:id="@+id/main_content"
+    android:paddingTop="60dp"
+
     >
 <!--    tools:showIn="@layout/app_bar_navigation_drawer"-->
     <eu.gsottbauer.equalizerview.EqualizerView
@@ -29,7 +31,6 @@
             android:layout_width="266dp"
             android:layout_height="189dp"
             android:layout_gravity="center_horizontal"
-            android:paddingTop="60dp"
             android:src="@drawable/logo_inactive" />
 
         <ImageView

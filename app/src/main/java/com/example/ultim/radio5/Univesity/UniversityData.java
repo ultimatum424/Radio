@@ -23,10 +23,6 @@ public class UniversityData {
 
     public UniversityData(Context context) {
         items = new ArrayList<UniversityItem>();
-        items.add(new UniversityItem("Volgatech", ""));
-        items.add(new UniversityItem("MarSU", ""));
-        items.add(new UniversityItem("MOSI", ""));
-
         this.context = context;
         fileManager = new FileManager(context);
 

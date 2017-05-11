@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ultim.radio5.Fragment.FragmentGenre">
+    tools:context="com.example.ultim.radio5.Fragment.FragmentGenre"
+    android:paddingTop="@dimen/padding_toolbar">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
