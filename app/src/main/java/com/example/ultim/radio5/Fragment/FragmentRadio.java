@@ -93,7 +93,10 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     View initView(View rootView){
         playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
         equalizerView = (EqualizerView) rootView.findViewById(R.id.equalaizer);
-        equalizerView.setVisibility(View.INVISIBLE);
+        //TODO: make invisible and not animate!!
+        equalizerView.setVisibility(View.VISIBLE);
+        equalizerView.animateBars();
+
         playButtonImageView.setOnClickListener(this);
         if (progressDialog == null){
             progressDialog = new ProgressDialog(getActivity());
