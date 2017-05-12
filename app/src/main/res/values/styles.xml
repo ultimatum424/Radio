@@ -22,6 +22,7 @@
         <item name="colorPrimary">#FFFFFF</item>
         <item name="colorAccent">#303030</item>
         <item name="colorPrimaryDark">#303030</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="SwitchTheme" parent="Theme.AppCompat.Light.NoActionBar">
