@@ -98,6 +98,8 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         if (progressDialog == null){
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage(getString(R.string.buffering));
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
         }
         return rootView;
     }
