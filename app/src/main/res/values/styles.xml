@@ -1,17 +1,6 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-
-
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">#303030</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
-        <item name="android:colorForeground">#303030</item>
-        <item name="android:colorBackground">#CED0CF</item>
-    </style>
 
     <style name="CustomPlayButton">
         <item name="android:layout_width">wrap_content</item>
@@ -29,21 +18,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-
-    <style name="NewTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:windowNoTitle">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColor">#FFFFFF</item>
-    </style>
-
-    <style name="TextAppearance.NewTheme" parent="@android:style/TextAppearance.Theme">
-        <item name="android:textColor">#ffffffff</item>
-    </style>
-
-    <style name="testTeheme" parent="Theme.AppCompat.NoActionBar" >
+    <style name="testTheme" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="colorPrimary">#FFFFFF</item>
         <item name="colorAccent">#303030</item>
         <item name="colorPrimaryDark">#303030</item>

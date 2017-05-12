@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/testTeheme"
+        android:theme="@style/testTheme"
 
         tools:replace="android:allowBackup">
 
@@ -39,7 +39,7 @@
             android:name=".NavigationDrawerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:theme="@style/testTeheme">
+            android:theme="@style/testTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

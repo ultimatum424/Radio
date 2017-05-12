@@ -87,7 +87,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
         });
         ImageView settings = (ImageView) findViewById(R.id.settingsImageView);
-        settings.setColorFilter(Color.WHITE);
     }
 
     void initOnlineContent(){
