@@ -51,7 +51,7 @@
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="20dp"
                 android:text="Исполнитель: Название трека"
-                android:textSize="16sp"
+                android:textSize="@dimen/singer_size"
                 android:theme="@style/ToolBarStyle" />
         </LinearLayout>
 

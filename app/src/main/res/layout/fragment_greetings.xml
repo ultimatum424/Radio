@@ -1,16 +1,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.ultim.radio5.Fragment.FragmentGreetings"
-    android:paddingTop="@dimen/padding_toolbar">
+    android:paddingTop="@dimen/padding_toolbar"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
 
     <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/logo_active"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
     <TextView
-        android:theme="@style/ToolBarStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Greetings"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="Которых опровергается, как и в тех площадках, в тех объектов кроме. Предположение, что дискретными источниками радиоизлучения. Попыток отождествления оптических и нельзя решить. Галактического экватора и сверхновых звезд с источниками радиоизлучения."
+        android:theme="@style/ToolBarStyle"
+        android:layout_below="@+id/imageView2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="18dp" />
 
 </RelativeLayout>

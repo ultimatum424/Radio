@@ -48,7 +48,7 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal"
             android:text="Исполнитель: Название трека"
-            android:textSize="16dp"
+            android:textSize="@dimen/singer_size"
             android:paddingTop="50dp"/>
     </LinearLayout>
 

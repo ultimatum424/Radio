@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Radio.iml" filepath="$PROJECT_DIR$/Radio.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/equalizerview/equalizerview.iml" filepath="$PROJECT_DIR$/equalizerview/equalizerview.iml" />
-      <module fileurl="file://$PROJECT_DIR$/equalizerview/equalizerview.iml" filepath="$PROJECT_DIR$/equalizerview/equalizerview.iml" />
     </modules>
   </component>
 </project>

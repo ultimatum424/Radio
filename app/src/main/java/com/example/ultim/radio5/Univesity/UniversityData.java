@@ -36,6 +36,9 @@ public class UniversityData {
         if (!Objects.equals(jsonString, "")){
             Type listType = new TypeToken<ArrayList<UniversityItem>>(){}.getType();
             items = gson.fromJson(jsonString, listType);
+        } else {
+            items.add(new UniversityItem("Волгатех", "http://217.22.172.49:8000/o5radio"));
+            items.add(new UniversityItem("МарГУ", "http://217.22.172.49:8000/margu"));
         }
     }
 

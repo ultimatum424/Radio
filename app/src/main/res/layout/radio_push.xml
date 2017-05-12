@@ -27,16 +27,16 @@
         android:layout_toEndOf="@+id/image">
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/linearLayout"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/button_play_push"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
             android:layout_toLeftOf="@+id/button_play_push"
-            android:layout_marginRight="10dp">
+            android:layout_toStartOf="@+id/button_play_push"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/singer"
@@ -44,10 +44,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
+                android:gravity="center_vertical"
                 android:scrollHorizontally="true"
                 android:text="Радиостанция"
                 android:textColor="#000"
-                android:gravity="center_vertical"
                 android:textSize="15dp" />
 
             <TextView
@@ -55,9 +55,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="Композиция"
                 android:textColor="#000"
-                android:gravity="center_vertical"
                 android:textSize="15dp" />
         </LinearLayout>
 
