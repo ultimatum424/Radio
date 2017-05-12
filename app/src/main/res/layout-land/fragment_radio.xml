@@ -9,7 +9,7 @@
     android:id="@+id/main_content"
     >
 <!--    tools:showIn="@layout/app_bar_navigation_drawer"-->
-    <eu.gsottbauer.equalizerview.EqualizerView
+    <com.project.equalizerview.EqualizerView
         android:id="@+id/equalaizer"
         android:layout_width="wrap_content"
         android:layout_height="110dp"
