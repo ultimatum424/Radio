@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 import com.example.ultim.radio5.Radio.RadioService;
+import com.project.equalizerview.EqualizerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -25,7 +26,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Objects;
 
-import eu.gsottbauer.equalizerview.EqualizerView;
 
 import static com.example.ultim.radio5.Pojo.RadioStateEvent.*;
 import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.*;
