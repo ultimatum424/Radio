@@ -35,6 +35,7 @@ public class MediaPlayerService extends Service {
     public static final String ACTION_SELECT = "action_select";
 
     private MediaPlayer mMediaPlayer;
+    private Notification.Builder builder;
     private MediaSessionManager mManager;
     private MediaSessionCompat mSession;
     private MediaControllerCompat mController;
@@ -84,7 +85,7 @@ public class MediaPlayerService extends Service {
         selectIntent.setAction( ACTION_SELECT );
         PendingIntent pendingSelectIntent = PendingIntent.getService(getApplicationContext(), 1, selectIntent, 0);
 
-        Notification.Builder builder = new Notification.Builder( this )
+        builder = new Notification.Builder( this )
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
                 .setContentTitle( "Media Title" )
                 .setContentText( "Media Artist" )
@@ -101,13 +102,16 @@ public class MediaPlayerService extends Service {
         notificationManager.notify( 1, builder.build() );
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if( mManager == null ) {
             initMediaSessions();
+
         }
 
         handleIntent( intent );
+        //startForeground(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, builder.getNotification());
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -127,19 +131,21 @@ public class MediaPlayerService extends Service {
                                      super.onPlay();
                                      Log.e( "MediaPlayerService", "onPlay");
                                      buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+                                    // sendBroadcast(new Intent(AppConstant.ACTION.PLAY_ACTION));
                                  }
 
                                  @Override
                                  public void onPause() {
                                      super.onPause();
+
                                      Log.e( "MediaPlayerService", "onPause");
                                      buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
+                                     //sendBroadcast(new Intent(AppConstant.ACTION.PLAY_ACTION));
                                  }
 
                                  @Override
                                  public void onCustomAction(String action, Bundle extras) {
                                      super.onCustomAction(action, extras);
-
                                      startActivity(new Intent( getApplicationContext(), NavigationDrawerActivity.class)
                                              .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                                              | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -154,6 +160,7 @@ public class MediaPlayerService extends Service {
                                      NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                                      notificationManager.cancel( 1 );
                                      Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
+                                     sendBroadcast(new Intent(AppConstant.ACTION.STOPFOREGROUND_ACTION));
                                      stopService( intent );
                                  }
 

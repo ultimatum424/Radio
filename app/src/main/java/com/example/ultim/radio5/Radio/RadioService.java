@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ultim.radio5.AppConstant;
+import com.example.ultim.radio5.MediaPlayerService;
 import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
@@ -44,11 +45,10 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     private static final String TAG = "RADIO";
     public static final float DUCK_VOLUME = 0.1f;
 
-    RadioNotification radioNotification;
+    //RadioNotification radioNotification;
     public static SateEnum stateRadio = STOP;
     MediaPlayer player;
     private WifiManager.WifiLock mWifiLock;
-    ProgressDialog dialog;
     private final BroadcastReceiver connectionBroadcast = new ConnectivityReceiver();
     private final BroadcastReceiver notificationBroadcast = new NotificationRadioReceiver();
     private final MusicIntentReceiver headPhoneReceiver = new MusicIntentReceiver();
@@ -95,8 +95,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
         player.prepareAsync();
         stateRadio = BUFFERING;
-        radioNotification.showNotification(getBaseContext(), title);
-        startForeground(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification.getRadioNotification());
+        //radioNotification.showNotification(getBaseContext(), title);
+        startService(new Intent(getApplicationContext(), MediaPlayerService.class ));
         EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
     }
 
@@ -119,7 +119,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             stateRadio = STOP;
             EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
         }
-        radioNotification.getNotificationManager().cancel(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE); // Remove notification
+       // radioNotification.getNotificationManager().cancel(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE); // Remove notification
         if (mWifiLock.isHeld()) {
             mWifiLock.release();
         }
@@ -130,14 +130,16 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             if (player.isPlaying()) {
                 player.pause();
                 stateRadio = PAUSE;
-                radioNotification.updateNotification();
+                //radioNotification.updateNotification();
+                startService(new Intent(getApplicationContext(), MediaPlayerService.class).setAction(MediaPlayerService.ACTION_PAUSE));
                 EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
                 return;
             }
             else if (!player.isPlaying()) {
                 player.start();
                 stateRadio = PLAY;
-                radioNotification.updateNotification();
+                //radioNotification.updateNotification();
+                startService(new Intent(getApplicationContext(), MediaPlayerService.class).setAction(MediaPlayerService.ACTION_PLAY));
                 EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
             }
         } else if (mAudioFocus == AudioFocus.NoFocusCanDuck) {
@@ -145,7 +147,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         } else if (!player.isPlaying()) {
             player.start();
             stateRadio = PLAY;
-            radioNotification.updateNotification();
+            //radioNotification.updateNotification();
+            startService(new Intent(getApplicationContext(), MediaPlayerService.class).setAction(MediaPlayerService.ACTION_PLAY));
             EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
         } else {
             player.setVolume(1.0f, 1.0f); // we can be loud
@@ -163,7 +166,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         }
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);
-        radioNotification = new RadioNotification();
+        //radioNotification = new RadioNotification();
 
         MyApplication.getInstance().setConnectivityListener(this);
         MyApplication.getInstance().setNotificationRadioLister(this);
@@ -188,7 +191,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         title = intent.getStringExtra("title");
         url = intent.getStringExtra("url");
         runPlayer();
-        return START_NOT_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
@@ -234,7 +237,8 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         tryToGetAudioFocus();
         reConfigMediaPlayer(false);
         stateRadio = PLAY;
-        radioNotification.updateNotification();
+        startService(new Intent(getApplicationContext(), MediaPlayerService.class).setAction(MediaPlayerService.ACTION_PLAY));
+        //radioNotification.updateNotification();
         EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
     }
 
