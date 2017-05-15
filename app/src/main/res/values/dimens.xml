@@ -6,5 +6,5 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="padding_toolbar">60dp</dimen>
-    <dimen name="singer_size">18dp</dimen>
+    <dimen name="singer_size">22sp</dimen>
 </resources>

@@ -13,6 +13,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v7.app.NotificationCompat;
@@ -53,6 +54,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     ProgressDialog dialog;
     private final BroadcastReceiver connectionBroadcast = new ConnectivityReceiver();
     private final BroadcastReceiver notificationBroadcast = new NotificationRadioReceiver();
+    private final MusicIntentReceiver headPhoneReceiver = new MusicIntentReceiver();
     private final IBinder mBinder = new MyBinder();
     AudioFocusHelper mAudioFocusHelper = null;
     AudioManager mAudioManager;
@@ -79,6 +81,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
                 R.layout.radio_push);
         expandedViews = new RemoteViews(getPackageName(), R.layout.radio_push_expanded);
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         // Select action
         Intent notificationIntent = new Intent(this, NavigationDrawerActivity.class);
         notificationIntent.setAction(AppConstant.ACTION.MAIN_ACTION);
@@ -188,16 +191,21 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
                 EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
                 return;
             }
+            else if (!player.isPlaying()) {
+                player.start();
+                stateRadio = PLAY;
+                updateNotification();
+                EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
+            }
         } else if (mAudioFocus == AudioFocus.NoFocusCanDuck) {
             player.setVolume(DUCK_VOLUME, DUCK_VOLUME);  // we'll be relatively quiet
-        } else {
-            player.setVolume(1.0f, 1.0f); // we can be loud
-        }
-        if (!player.isPlaying()) {
+        } else if (!player.isPlaying()) {
             player.start();
             stateRadio = PLAY;
             updateNotification();
             EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
+        } else {
+            player.setVolume(1.0f, 1.0f); // we can be loud
         }
 
     }
@@ -211,13 +219,16 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
             stopSelf();
         }
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);;
+        mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);
+
         MyApplication.getInstance().setConnectivityListener(this);
         MyApplication.getInstance().setNotificationRadioLister(this);
         IntentFilter intentFilter1 = new IntentFilter();
         intentFilter1.addAction("com.radio5.radionotification.action.stopforeground");
         intentFilter1.addAction("com.radio5.radionotification.action.play");
         registerReceiver(notificationBroadcast, intentFilter1);
+        IntentFilter headPhoneIntentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(headPhoneReceiver, headPhoneIntentFilter);
         IntentFilter netFilter = new IntentFilter();
         netFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(connectionBroadcast, netFilter);
@@ -242,6 +253,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         relaxRecourse();
         unregisterReceiver(connectionBroadcast);
         unregisterReceiver(notificationBroadcast);
+        unregisterReceiver(headPhoneReceiver);
         super.onDestroy();
     }
 
@@ -334,7 +346,30 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(String command) {
         if (Objects.equals(command, "start")){
+            tryToGetAudioFocus();
             reConfigMediaPlayer(false);
         }
     }
+
+    private class MusicIntentReceiver extends BroadcastReceiver {
+        @Override public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+                int state = intent.getIntExtra("state", -1);
+                switch (state) {
+                    case 0:
+                        Log.d(TAG, "Headset is unplugged");
+                        if (player.isPlaying()) {
+                            reConfigMediaPlayer(true);
+                        }
+                        break;
+                    case 1:
+                        Log.d(TAG, "Headset is plugged");
+                        break;
+                    default:
+                        Log.d(TAG, "I have no idea what the headset state is");
+                }
+            }
+        }
+    }
+
 }
