@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <!--android:theme="@style/AppTheme"-->
     <application xmlns:tools="http://schemas.android.com/tools"
@@ -22,6 +23,9 @@
             android:name=".Radio.RadioService"
             android:enabled="true"
             android:exported="true" />
+        <service android:name=".MediaPlayerService"
+            android:enabled="true"
+            android:exported="true"/>
 
         <receiver
             android:name=".Radio.ConnectivityReceiver"

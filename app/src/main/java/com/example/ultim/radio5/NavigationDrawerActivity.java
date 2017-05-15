@@ -1,5 +1,6 @@
 package com.example.ultim.radio5;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -162,6 +163,10 @@ public class NavigationDrawerActivity extends AppCompatActivity
         initFragment(GREETINGS);
         // TODO : GO TO initFragment or else SM
         initRadioIfStreaming();
+        // Test Intent
+        Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
+        intent.setAction( MediaPlayerService.ACTION_PLAY );
+        startService( intent );
     }
 
     @Override
