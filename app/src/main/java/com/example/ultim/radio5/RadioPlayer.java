@@ -65,7 +65,8 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     }
 
     @Override
-    public void start() {
+    public void start(String source) {
+
     }
 
     @Override
@@ -96,7 +97,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     }
 
     @Override
-    public void play() {
+    public void play(String source) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
@@ -108,7 +109,6 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
             try {
                 createMediaPlayerIfNeeded();
-
                 mState = PlaybackStateCompat.STATE_BUFFERING;
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setDataSource(source);

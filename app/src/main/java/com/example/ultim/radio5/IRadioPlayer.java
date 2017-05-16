@@ -7,11 +7,11 @@ package com.example.ultim.radio5;
 public interface IRadioPlayer {
 
 
-    void start();
+    void start(String source);
     void pause();
     void stop();
     boolean isPlaying();
-    void play();
+    void play(String source);
     int getState();
     void setState(int state);
 

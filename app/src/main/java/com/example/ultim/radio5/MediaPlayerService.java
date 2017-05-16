@@ -17,6 +17,8 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v7.app.NotificationCompat;
+
 import android.util.Log;
 
 /**
@@ -27,15 +29,11 @@ public class MediaPlayerService extends Service {
 
     public static final String ACTION_PLAY = "action_play";
     public static final String ACTION_PAUSE = "action_pause";
-    public static final String ACTION_REWIND = "action_rewind";
-    public static final String ACTION_FAST_FORWARD = "action_fast_foward";
-    public static final String ACTION_NEXT = "action_next";
-    public static final String ACTION_PREVIOUS = "action_previous";
     public static final String ACTION_STOP = "action_stop";
     public static final String ACTION_SELECT = "action_select";
 
     private MediaPlayer mMediaPlayer;
-    private Notification.Builder builder;
+    private NotificationCompat.Builder builder;
     private MediaSessionManager mManager;
     private MediaSessionCompat mSession;
     private MediaControllerCompat mController;
@@ -55,49 +53,42 @@ public class MediaPlayerService extends Service {
         if( action.equalsIgnoreCase( ACTION_PLAY ) ) {
             mController.getTransportControls().play();
         } else if( action.equalsIgnoreCase( ACTION_PAUSE ) ) {
-            mController.getTransportControls().pause();
-        } else if( action.equalsIgnoreCase( ACTION_FAST_FORWARD ) ) {
-            mController.getTransportControls().fastForward();
-        } else if( action.equalsIgnoreCase( ACTION_REWIND ) ) {
-            mController.getTransportControls().rewind();
-        } else if( action.equalsIgnoreCase( ACTION_PREVIOUS ) ) {
-            mController.getTransportControls().skipToPrevious();
-        } else if( action.equalsIgnoreCase( ACTION_NEXT ) ) {
-            mController.getTransportControls().skipToNext();
-        } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
             mController.getTransportControls().stop();
         } else if (action.equalsIgnoreCase(ACTION_SELECT)) {
             mController.getTransportControls().sendCustomAction(ACTION_SELECT, new Bundle());
         }
     }
 
-    private Notification.Action generateAction(int icon, String title, String intentAction ) {
+    private NotificationCompat.Action generateAction(int icon, String title, String intentAction ) {
         Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
         intent.setAction( intentAction );
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        return new Notification.Action.Builder( icon, title, pendingIntent ).build();
+        return new NotificationCompat.Action.Builder( icon, title, pendingIntent ).build();
     }
 
-    private void buildNotification( Notification.Action action ) {
-        Notification.MediaStyle style = new Notification.MediaStyle();
-
+    private void buildNotification( NotificationCompat.Action action ) {
+        NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle();
         Intent selectIntent = new Intent( getApplicationContext(), MediaPlayerService.class );
         selectIntent.setAction( ACTION_SELECT );
+        style.setCancelButtonIntent(PendingIntent.getService(getApplicationContext(), 1, selectIntent, 0));
+        style.setShowCancelButton(true);
+
         PendingIntent pendingSelectIntent = PendingIntent.getService(getApplicationContext(), 1, selectIntent, 0);
 
-        builder = new Notification.Builder( this )
+        builder = (NotificationCompat.Builder) new NotificationCompat.Builder( this )
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
                 .setContentTitle( "Media Title" )
                 .setContentText( "Media Artist" )
-               // .setDeleteIntent( pendingIntent )
-                .setAutoCancel(false)
+                //.setDeleteIntent( pendingIntent )
                 .setContentIntent(pendingSelectIntent)
-                .setShowWhen(false)
-                .setStyle(style);
+                .setStyle(style)
+                .setAutoCancel(true);
 
         builder.addAction( action );
         builder.addAction( generateAction( android.R.drawable.ic_notification_clear_all, "Stop", ACTION_STOP ) );
-        style.setShowActionsInCompactView(0, 1);
+
+        style.setShowActionsInCompactView();
+
         NotificationManager notificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
         notificationManager.notify( 1, builder.build() );
     }
@@ -132,6 +123,7 @@ public class MediaPlayerService extends Service {
                                      Log.e( "MediaPlayerService", "onPlay");
                                      buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
                                     // sendBroadcast(new Intent(AppConstant.ACTION.PLAY_ACTION));
+                                     startForeground(1, builder.build());
                                  }
 
                                  @Override
@@ -141,6 +133,7 @@ public class MediaPlayerService extends Service {
                                      Log.e( "MediaPlayerService", "onPause");
                                      buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
                                      //sendBroadcast(new Intent(AppConstant.ACTION.PLAY_ACTION));
+                                     //stopForeground(true);
                                  }
 
                                  @Override
@@ -161,13 +154,11 @@ public class MediaPlayerService extends Service {
                                      notificationManager.cancel( 1 );
                                      Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
                                      sendBroadcast(new Intent(AppConstant.ACTION.STOPFOREGROUND_ACTION));
+                                     //stopForeground(true);
                                      stopService( intent );
                                  }
 
-                                 @Override
-                                 public void onSeekTo(long pos) {
-                                     super.onSeekTo(pos);
-                                 }
+
                              }
         );
     }

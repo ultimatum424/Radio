@@ -164,7 +164,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         // TODO : GO TO initFragment or else SM
         initRadioIfStreaming();
         // Test Intent
-       // startService(new Intent(getApplicationContext(), MediaPlayerService.class).setAction(MediaPlayerService.ACTION_PLAY));
+        startService(new Intent(getApplicationContext(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_PLAY));
     }
 
     @Override

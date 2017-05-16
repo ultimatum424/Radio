@@ -31,6 +31,7 @@ public class RadioPlayerService extends Service {
     private MediaSessionCompat mSession;
     private MediaSessionManager mManager;
     private NotificationCompat.Builder mBuild;
+    private RadioPlayer mRadioPlayer;
 
 
     @Nullable
@@ -93,6 +94,9 @@ public class RadioPlayerService extends Service {
                 e.printStackTrace();
             }
         }
+        if (mRadioPlayer == null){
+            mRadioPlayer = new RadioPlayer(getApplicationContext());
+        }
 
         handleIntent( intent );
         return super.onStartCommand(intent, flags, startId);
@@ -109,6 +113,7 @@ public class RadioPlayerService extends Service {
                 super.onPlay();
                 Log.e( "MediaPlayerService", "onPlay");
                 buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+                mRadioPlayer.play("http://217.22.172.49:8000/o5radio");
                 startForeground(1, mBuild.build());
             }
 
@@ -117,6 +122,7 @@ public class RadioPlayerService extends Service {
                 super.onPause();
                 Log.e( "MediaPlayerService", "onPause");
                 buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
+                mRadioPlayer.pause();
                 stopForeground(false);
             }
 
@@ -124,7 +130,8 @@ public class RadioPlayerService extends Service {
             @Override
             public void onStop() {
                 super.onStop();
-
+                mRadioPlayer.isPlaying();
+                mRadioPlayer.stop();
                 NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancel( 1 );
                 stopForeground(true);

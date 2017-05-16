@@ -191,7 +191,7 @@ public class RadioService extends Service implements  MediaPlayer.OnErrorListene
         title = intent.getStringExtra("title");
         url = intent.getStringExtra("url");
         runPlayer();
-        return START_REDELIVER_INTENT;
+        return START_NOT_STICKY;
     }
 
     @Override

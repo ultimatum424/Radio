@@ -24,6 +24,11 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service
+            android:name=".RadioPlayerService"
+            android:enabled="true"
+            android:exported="true" />
+
         <service android:name=".MediaPlayerService"
             android:enabled="true"
             android:exported="true"/>
