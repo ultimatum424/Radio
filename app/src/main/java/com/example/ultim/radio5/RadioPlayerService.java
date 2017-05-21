@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.session.MediaSessionManager;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -84,10 +86,14 @@ public class RadioPlayerService extends Service {
         PendingIntent pendingSelectIntent = PendingIntent.getActivity(getApplicationContext(), 0,
                 notificationIntent, 0);
 
+        Bitmap largeIcon = BitmapFactory.decodeResource(getApplication().getResources(),
+                R.mipmap.ic_launcher);
+
         mBuild = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
                 .setContentTitle( title )
                 .setContentText( url )
+                .setLargeIcon(largeIcon)
                 .setContentIntent(pendingSelectIntent)
                 .setOngoing(true)
                 .setStyle(style);
