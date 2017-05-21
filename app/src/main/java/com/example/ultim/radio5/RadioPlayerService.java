@@ -64,10 +64,6 @@ public class RadioPlayerService extends Service {
         } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
         mController.getTransportControls().stop();
         }
-        if (mRadioPlayer != null) {
-           // EventBus.getDefault().postSticky(new RadioMessage(mRadioPlayer.getState(), title, url));
-        }
-        //TODO: GET ACTON CONTROL
     }
 
 
@@ -120,7 +116,8 @@ public class RadioPlayerService extends Service {
         }
 
         handleIntent( intent );
-        return super.onStartCommand(intent, flags, startId);
+        //return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     private void initMediaSessions() throws RemoteException {
@@ -144,7 +141,7 @@ public class RadioPlayerService extends Service {
                 Log.e( "MediaPlayerService", "onPause");
                 buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
                 mRadioPlayer.pause();
-                stopForeground(false);
+                //stopForeground(false);
             }
 
 

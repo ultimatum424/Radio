@@ -7,10 +7,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -38,7 +41,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private int mState;
     private boolean mPlayOnFocusGain;
     private volatile boolean mReceiversRegistered;
-    private String mCurrentSource;
+    private String mCurrentSource = "";
     private String mCurrentTitle;
     private boolean headsetConnected = false;
 
@@ -52,6 +55,9 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
     private final IntentFilter mAudioActionHeadsetPlugFilter =
             new IntentFilter(AudioManager.ACTION_HEADSET_PLUG);
+
+    private  final IntentFilter mConnectFilter =
+            new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
 
 
     private final BroadcastReceiver mAudioNoisyReceiver = new BroadcastReceiver() {
@@ -77,6 +83,18 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
             }
         }
     };
+
+    private final BroadcastReceiver mConnectionChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!isConnected()){
+                Toast.makeText(mContext, "Интернет соеденение отсутствует", Toast.LENGTH_SHORT).show();
+                stop();
+                mContext.startService(new Intent(mContext, RadioPlayerService.class).setAction(RadioPlayerService.ACTION_STOP));
+            }
+        }
+    };
+
     @SuppressLint("WifiManagerPotentialLeak")
     public RadioPlayer(Context context) {
         this.mContext = context;
@@ -123,6 +141,12 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     public void play(String source, String title) {
         mPlayOnFocusGain = true;
         mCurrentTitle = title;
+        /*
+        if (!isConnected()){
+            Toast.makeText(mContext, "Интернет соеденение отсутствет", Toast.LENGTH_SHORT).show();
+            stop();
+            mContext.startService(new Intent(mContext, RadioPlayerService.class).setAction(RadioPlayerService.ACTION_STOP));
+        }*/
         tryToGetAudioFocus();
         registerReceivers();
         if (mState == PlaybackStateCompat.STATE_PAUSED && mMediaPlayer != null && mCurrentSource.equals(source)) {
@@ -301,10 +325,19 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
     }
 
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null
+                && activeNetwork.isConnectedOrConnecting();
+    }
+
     private void registerReceivers() {
         if (!mReceiversRegistered) {
             mContext.registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
             mContext.registerReceiver(mAudioActionHeadsReceiver, mAudioActionHeadsetPlugFilter);
+            mContext.registerReceiver(mConnectionChangeReceiver, mConnectFilter);
             mReceiversRegistered = true;
         }
     }
@@ -312,6 +345,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
         if (mReceiversRegistered) {
             mContext.unregisterReceiver(mAudioNoisyReceiver);
             mContext.unregisterReceiver(mAudioActionHeadsReceiver);
+            mContext.unregisterReceiver(mConnectionChangeReceiver);
             mReceiversRegistered = false;
         }
     }
