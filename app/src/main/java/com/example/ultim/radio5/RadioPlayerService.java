@@ -17,6 +17,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 /**
  * Created by Ultim on 16.05.2017.
  */
@@ -62,7 +64,9 @@ public class RadioPlayerService extends Service {
         } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
         mController.getTransportControls().stop();
         }
-
+        if (mRadioPlayer != null) {
+           // EventBus.getDefault().postSticky(new RadioMessage(mRadioPlayer.getState(), title, url));
+        }
         //TODO: GET ACTON CONTROL
     }
 
@@ -130,7 +134,7 @@ public class RadioPlayerService extends Service {
                 super.onPlay();
                 Log.e( "MediaPlayerService", "onPlay");
                 buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
-                mRadioPlayer.play(url);
+                mRadioPlayer.play(url, title);
                 startForeground(1, mBuild.build());
             }
 
@@ -154,7 +158,6 @@ public class RadioPlayerService extends Service {
                 stopForeground(true);
                 Intent intent = new Intent( getApplicationContext(), RadioPlayerService.class );
                 stopService( intent );
-
             }
         });
 

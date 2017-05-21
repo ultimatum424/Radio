@@ -11,7 +11,7 @@ public interface IRadioPlayer {
     void pause();
     void stop();
     boolean isPlaying();
-    void play(String source);
+    void play(String source, String title);
     int getState();
     void setState(int state);
 

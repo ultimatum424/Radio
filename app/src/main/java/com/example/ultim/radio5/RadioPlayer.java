@@ -12,6 +12,8 @@ import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 
 /**
@@ -37,6 +39,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private boolean mPlayOnFocusGain;
     private volatile boolean mReceiversRegistered;
     private String mCurrentSource;
+    private String mCurrentTitle;
 
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
@@ -80,7 +83,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
         }
         relaxResources(false);
         mState = PlaybackStateCompat.STATE_PAUSED;
-        //TODO: ADD CALLBACK
+        EventBus.getDefault().postSticky(new RadioMessage(mState, mCurrentTitle, mCurrentSource));
         unregisterReceivers();
     }
 
@@ -88,7 +91,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     public void stop() {
         mState = PlaybackStateCompat.STATE_STOPPED;
         unregisterReceivers();
-            //TODO: ADD ACTON
+        EventBus.getDefault().postSticky(new RadioMessage(mState, mCurrentTitle, mCurrentSource));
         giveUpAudioFocus();
         relaxResources(true);
     }
@@ -99,8 +102,9 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     }
 
     @Override
-    public void play(String source) {
+    public void play(String source, String title) {
         mPlayOnFocusGain = true;
+        mCurrentTitle = title;
         tryToGetAudioFocus();
         registerReceivers();
         if (mState == PlaybackStateCompat.STATE_PAUSED && mMediaPlayer != null && mCurrentSource.equals(source)) {
@@ -123,6 +127,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 //TODO: ADD EXIT PLAYER
             }
         }
+        EventBus.getDefault().postSticky(new RadioMessage(mState, mCurrentTitle, source));
     }
 
     @Override
@@ -244,6 +249,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 mState = PlaybackStateCompat.STATE_PLAYING;
             }
         }
+        EventBus.getDefault().postSticky(new RadioMessage(mState, mCurrentTitle, mCurrentSource));
         mPlayOnFocusGain = false;
     }
 

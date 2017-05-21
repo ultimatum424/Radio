@@ -45,7 +45,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     EqualizerView equalizerView;
     int mState = PlaybackStateCompat.STATE_NONE;
     ProgressDialog progressDialog;
-    RadioMessage radioMessage = null;
+    RadioMessage radioMessage;
 
     // TODO: Rename and change types of parameters
     private String universityName;
@@ -214,7 +214,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         if (Objects.equals(inputMessage.getUniversityName(), universityName)) {
             mState = inputMessage.getState();
         } else {
-            mState = PlaybackStateCompat.STATE_STOPPED;
+            mState = PlaybackStateCompat.STATE_NONE;
         }
 
         switch (mState) {
