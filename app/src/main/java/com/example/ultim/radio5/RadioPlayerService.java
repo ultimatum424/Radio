@@ -33,6 +33,9 @@ public class RadioPlayerService extends Service {
     private NotificationCompat.Builder mBuild;
     private RadioPlayer mRadioPlayer;
 
+    private String url;
+    private String title;
+
 
     @Nullable
     @Override
@@ -43,6 +46,10 @@ public class RadioPlayerService extends Service {
     private void handleIntent(Intent intent){
         if (intent == null || intent.getAction() == null){
             return;
+        }
+        if (intent.getExtras() != null) {
+            url = intent.getStringExtra("url");
+            title = intent.getStringExtra("title");
         }
         String action = intent.getAction();
 
@@ -70,9 +77,9 @@ public class RadioPlayerService extends Service {
 
         mBuild = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
-                .setContentTitle( "Media Title" )
-                .setContentText( "Media Artist" )
-                //.setDeleteIntent( pendingIntent )
+                .setContentTitle( title )
+                .setContentText( url )
+                .setOngoing(true)
                 .setStyle(style);
 
         mBuild.addAction( action );
@@ -113,7 +120,7 @@ public class RadioPlayerService extends Service {
                 super.onPlay();
                 Log.e( "MediaPlayerService", "onPlay");
                 buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
-                mRadioPlayer.play("http://217.22.172.49:8000/o5radio");
+                mRadioPlayer.play(url);
                 startForeground(1, mBuild.build());
             }
 
@@ -141,5 +148,13 @@ public class RadioPlayerService extends Service {
             }
         });
 
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }

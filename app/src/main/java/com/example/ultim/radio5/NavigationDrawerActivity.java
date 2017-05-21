@@ -37,6 +37,7 @@ import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UniversityListAdapter;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.example.ultim.radio5.AppConstant.FragmentType.GREETINGS;
 
@@ -164,7 +165,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         // TODO : GO TO initFragment or else SM
         initRadioIfStreaming();
         // Test Intent
-        startService(new Intent(getApplicationContext(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_PLAY));
+        //startService(new Intent(getApplicationContext(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_PLAY));
     }
 
     @Override

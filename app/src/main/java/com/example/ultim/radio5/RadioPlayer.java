@@ -1,12 +1,12 @@
 package com.example.ultim.radio5;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 
 public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChangeListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener {
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnInfoListener {
 
     public static final float VOLUME_DUCK = 0.2f;
     public static final float VOLUME_NORMAL = 1.0f;
@@ -35,7 +35,8 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private final WifiManager.WifiLock mWifiLock;
     private int mState;
     private boolean mPlayOnFocusGain;
-    private volatile boolean mAudioNoisyReceiverRegistered;
+    private volatile boolean mReceiversRegistered;
+    private String mCurrentSource;
 
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
@@ -55,6 +56,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
             }
         }
     };
+    @SuppressLint("WifiManagerPotentialLeak")
     public RadioPlayer(Context context) {
         this.mContext = context;
         this.mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -79,13 +81,13 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
         relaxResources(false);
         mState = PlaybackStateCompat.STATE_PAUSED;
         //TODO: ADD CALLBACK
-        unregisterAudioNoisyReceiver();
+        unregisterReceivers();
     }
 
     @Override
     public void stop() {
         mState = PlaybackStateCompat.STATE_STOPPED;
-
+        unregisterReceivers();
             //TODO: ADD ACTON
         giveUpAudioFocus();
         relaxResources(true);
@@ -100,11 +102,12 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     public void play(String source) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
-        registerAudioNoisyReceiver();
-        if (mState == PlaybackStateCompat.STATE_PAUSED && mMediaPlayer != null) {
+        registerReceivers();
+        if (mState == PlaybackStateCompat.STATE_PAUSED && mMediaPlayer != null && mCurrentSource.equals(source)) {
             configMediaPlayerState();
         } else {
             mState = PlaybackStateCompat.STATE_STOPPED;
+            mCurrentSource = source;
             relaxResources(false); // release everything except MediaPlayer
 
             try {
@@ -117,6 +120,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
             } catch (IOException ex) {
                 Log.e("RadioPlayer" + ex, "Exception playing song");
+                //TODO: ADD EXIT PLAYER
             }
         }
     }
@@ -173,7 +177,10 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        configMediaPlayerState();
+        if ( mState == PlaybackStateCompat.STATE_BUFFERING){
+            configMediaPlayerState();
+        }
+
     }
 
     private void tryToGetAudioFocus() {
@@ -185,6 +192,23 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
         } else {
             mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
         }
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        switch (what) {
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                Log.e("RadioPlayer", "BUFFERING_1");
+                //stateRadio = BUFFERING;
+               // EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
+                break;
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                Log.e("RadioPlayer", "BUFFERING_0");
+                //stateRadio = PLAY;
+               // EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
+                break;
+        }
+        return false;
     }
 
     private void giveUpAudioFocus() {
@@ -203,7 +227,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 pause();
             }
         } else { // we have audio focus:
-            registerAudioNoisyReceiver();
+            registerReceivers();
             if (mAudioFocus == AUDIO_NO_FOCUS_CAN_DUCK) {
                 mMediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK); // we'll be relatively quiet
             } else {
@@ -232,6 +256,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnErrorListener(this);
+            mMediaPlayer.setOnInfoListener(this);
         } else {
             mMediaPlayer.reset();
         }
@@ -252,17 +277,16 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
     }
 
-    private void registerAudioNoisyReceiver() {
-        if (!mAudioNoisyReceiverRegistered) {
+    private void registerReceivers() {
+        if (!mReceiversRegistered) {
             mContext.registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
-            mAudioNoisyReceiverRegistered = true;
+            mReceiversRegistered = true;
         }
     }
-    private void unregisterAudioNoisyReceiver() {
-        if (mAudioNoisyReceiverRegistered) {
+    private void unregisterReceivers() {
+        if (mReceiversRegistered) {
             mContext.unregisterReceiver(mAudioNoisyReceiver);
-            mAudioNoisyReceiverRegistered = false;
+            mReceiversRegistered = false;
         }
     }
-
 }

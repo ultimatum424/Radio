@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -18,6 +19,8 @@ import android.widget.ImageView;
 import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
 import com.example.ultim.radio5.Radio.RadioService;
+import com.example.ultim.radio5.RadioMessage;
+import com.example.ultim.radio5.RadioPlayerService;
 import com.project.equalizerview.EqualizerView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,7 +50,9 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM2 = "param2";
     EqualizerView equalizerView;
     SateEnum state = STOP;
+    int mState = PlaybackStateCompat.STATE_NONE;
     ProgressDialog progressDialog;
+    RadioMessage radioMessage = null;
 
     // TODO: Rename and change types of parameters
     private String universityName;
@@ -87,6 +92,9 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
             universityName = getArguments().getString(ARG_PARAM1);
             universityUrl = getArguments().getString(ARG_PARAM2);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(universityName);
+        }
+        if (radioMessage == null) {
+            radioMessage = new RadioMessage();
         }
     }
 
@@ -135,7 +143,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
         viewGroup.removeAllViewsInLayout();
         View subview = initView(inflater.inflate(R.layout.fragment_radio, viewGroup));
-        changeState(state);
+        changeState(radioMessage);
 
     }
 
@@ -166,13 +174,13 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     }
 
     private void startStopRadio() {
-        if (Objects.equals(universityName, title)){
+        if (Objects.equals(radioMessage.getUniversityName(), universityName)) {
 
-            if (state == PAUSE){
-                EventBus.getDefault().post("start");
+            if (mState == PlaybackStateCompat.STATE_PAUSED){
+                //EventBus.getDefault().post("start");
             }
 
-            else if( stateRadio != STOP){
+            else if (mState != PlaybackStateCompat.STATE_STOPPED){
                 stopService();
             }
 
@@ -181,10 +189,9 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
             }
             //restart Service
         } else {
-            if( stateRadio != STOP){
-                stopService();
+            if (mState != PlaybackStateCompat.STATE_STOPPED) {
+                runService();
             }
-            runService();
         }
     }
 
@@ -192,31 +199,32 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         // Start service
         Thread t = new Thread(){
             public void run(){
-                Intent intent = new Intent(getActivity(), RadioService.class);
+                Intent intent = new Intent(getActivity(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_PLAY);
                 intent.putExtra("title", universityName);
                 intent.putExtra("url", universityUrl);
-                getContext().startService(intent);
+                getActivity().startService(intent);
             }
         };
         t.start();
     }
     private void stopService(){
         // Stop service
-        Intent intent = new Intent(getActivity(), RadioService.class);
-        getActivity().stopService(intent);
-        equalizerView.stopBars();
-        equalizerView.setVisibility(View.INVISIBLE);
+        Intent intent = new Intent(getActivity(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_STOP);
+        getActivity().startService(intent);
+       // equalizerView.stopBars();
+        //equalizerView.setVisibility(View.INVISIBLE);
     }
 
-    private void changeState(SateEnum inputState) {
-        if (Objects.equals(title, universityName)) {
-            state = inputState;
+    private void changeState(RadioMessage inputMessage) {
+        radioMessage = inputMessage;
+        if (Objects.equals(inputMessage.getUniversityName(), universityName)) {
+            mState = inputMessage.getState();
         } else {
-            state = STOP;
+            mState = PlaybackStateCompat.STATE_STOPPED;
         }
 
-        switch (state) {
-            case PAUSE:
+        switch (mState) {
+            case PlaybackStateCompat.STATE_PAUSED:
                 playButtonImageView.setImageResource(R.drawable.play_button_selector);
                 equalizerView.animateBars();
                 equalizerView.setVisibility(View.INVISIBLE);
@@ -225,7 +233,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
                 }
                 break;
 
-            case PLAY:
+            case PlaybackStateCompat.STATE_PLAYING:
                 playButtonImageView.setImageResource(R.drawable.stop_button_selector);
                 equalizerView.animateBars();
                 equalizerView.setVisibility(View.VISIBLE);
@@ -234,14 +242,14 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
                 }
                 break;
 
-            case BUFFERING:
+            case PlaybackStateCompat.STATE_BUFFERING:
                 playButtonImageView.setImageResource(R.drawable.stop_button_selector);
                 equalizerView.stopBars();
                 equalizerView.setVisibility(View.INVISIBLE);
                 progressDialog.show();
                 break;
 
-            case STOP: default:
+            case PlaybackStateCompat.STATE_STOPPED: default:
                 playButtonImageView.setImageResource(R.drawable.play_button_selector);
                 equalizerView.stopBars();
                 equalizerView.setVisibility(View.INVISIBLE);
@@ -253,8 +261,8 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(RadioStateEvent event){
-        changeState( event.getSateEnum());
+    public void onEvent(RadioMessage radioMessage){
+        changeState( radioMessage);
     }
 
     @Override
