@@ -14,12 +14,11 @@ import com.example.ultim.radio5.AppConstant;
 import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 
-import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.PLAY;
 
 /**
  * Created by Ultim on 15.05.2017.
  */
-
+/*
 public class RadioNotification {
 
     public NotificationManager getNotificationManager() {
@@ -94,3 +93,4 @@ public class RadioNotification {
         notificationManager.notify(AppConstant.NOTIFICATION_ID.FOREGROUND_SERVICE, radioNotification);
     }
 }
+*/

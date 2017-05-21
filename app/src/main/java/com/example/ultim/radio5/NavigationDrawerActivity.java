@@ -1,5 +1,6 @@
 package com.example.ultim.radio5;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -31,7 +32,7 @@ import com.example.ultim.radio5.Fragment.FragmentRadio;
 import com.example.ultim.radio5.Fragment.FragmentGenre;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
-import com.example.ultim.radio5.Radio.RadioService;
+import com.example.ultim.radio5.Radio.TitleRadio;
 import com.example.ultim.radio5.Univesity.UniversityData;
 import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.example.ultim.radio5.Univesity.UniversityListAdapter;
@@ -232,11 +233,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
            UniversityItem current;
 
-           if(RadioService.title == null || !RadioService.title.equals(universityListAdapter.getCurrent())) {
+           if(!isServiceRunning() || !TitleRadio.getInstance().getTitle().equals(universityListAdapter.getCurrent())) {
                current = universityListAdapter.getCurrent();
            }
-           else if (RadioService.title != null) {
-               current = universityData.findItemByTitle(RadioService.title);
+           else if (isServiceRunning()) {
+               current = universityData.findItemByTitle(TitleRadio.getInstance().getTitle());
                if(current == null) {
                    //ERROR
                    throw new IllegalArgumentException("title != title not found in arraylist");
@@ -257,8 +258,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
     }
 
     private void initRadioIfStreaming() {
-        if(RadioService.title != null) {
-            UniversityItem current = universityData.findItemByTitle(RadioService.title);
+        if(isServiceRunning()) {
+           // UniversityItem current = universityData.findItemByTitle(RadioService.title);
+            UniversityItem current = universityData.findItemByTitle(TitleRadio.getInstance().getTitle());
             Fragment fragment = FragmentRadio.newInstance(current.getName(), current.getStream());
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -292,6 +294,16 @@ public class NavigationDrawerActivity extends AppCompatActivity
         ft.replace(R.id.content_container, fragment);
         ft.commit();
         drawer.closeDrawers();
+    }
+
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if(RadioPlayerService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class OKHttpRequest extends AsyncTask<Void, Void, Void>{

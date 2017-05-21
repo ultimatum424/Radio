@@ -16,9 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.ultim.radio5.Pojo.RadioStateEvent;
 import com.example.ultim.radio5.R;
-import com.example.ultim.radio5.Radio.RadioService;
+import com.example.ultim.radio5.Radio.TitleRadio;
 import com.example.ultim.radio5.RadioMessage;
 import com.example.ultim.radio5.RadioPlayerService;
 import com.project.equalizerview.EqualizerView;
@@ -28,11 +27,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Objects;
-
-
-import static com.example.ultim.radio5.Pojo.RadioStateEvent.*;
-import static com.example.ultim.radio5.Pojo.RadioStateEvent.SateEnum.*;
-import static com.example.ultim.radio5.Radio.RadioService.*;
 
 
 /**
@@ -49,7 +43,6 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     EqualizerView equalizerView;
-    SateEnum state = STOP;
     int mState = PlaybackStateCompat.STATE_NONE;
     ProgressDialog progressDialog;
     RadioMessage radioMessage = null;
@@ -197,6 +190,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
 
     private void runService(){
         // Start service
+        TitleRadio.getInstance().setTitle(universityName);
         Thread t = new Thread(){
             public void run(){
                 Intent intent = new Intent(getActivity(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_PLAY);

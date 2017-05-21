@@ -37,6 +37,8 @@ public class RadioPlayerService extends Service {
     private String title;
 
 
+
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -64,6 +66,7 @@ public class RadioPlayerService extends Service {
         //TODO: GET ACTON CONTROL
     }
 
+
     private NotificationCompat.Action generateAction(int icon, String title, String intentAction) {
         Intent intent = new Intent( getApplicationContext(), RadioPlayerService.class );
         intent.setAction( intentAction );
@@ -74,11 +77,18 @@ public class RadioPlayerService extends Service {
     private void buildNotification(NotificationCompat.Action action){
         NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle();
         style.setShowCancelButton(true);
+        Intent notificationIntent = new Intent(getApplicationContext(), NavigationDrawerActivity.class);
+        notificationIntent.setAction(AppConstant.ACTION.MAIN_ACTION);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingSelectIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                notificationIntent, 0);
 
         mBuild = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
                 .setContentTitle( title )
                 .setContentText( url )
+                .setContentIntent(pendingSelectIntent)
                 .setOngoing(true)
                 .setStyle(style);
 
