@@ -15,6 +15,41 @@
         android:layout_height="110dp"
         android:layout_alignParentBottom="true" />
 
+    <RelativeLayout
+        android:id="@+id/preview_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true">
+
+        <com.project.equalizerview.EqualizerView
+            android:id="@+id/equalizerView_small"
+            android:layout_width="25dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            app:barCount="3"
+
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/preview_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="НАЗВАНИЕ станции"
+            android:textStyle="normal"
+            android:textSize="20dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/equalizerView_small"
+            android:layout_toEndOf="@+id/equalizerView_small"
+            android:layout_marginLeft="18dp"
+            android:layout_marginStart="18dp" />
+
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal"
+            android:textStyle="bold"
             android:text="Исполнитель: Название трека"
             android:textSize="@dimen/singer_size"
             android:paddingTop="50dp"/>

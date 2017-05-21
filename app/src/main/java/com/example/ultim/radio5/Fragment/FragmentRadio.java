@@ -1,5 +1,6 @@
 package com.example.ultim.radio5.Fragment;
 
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -15,7 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 import com.example.ultim.radio5.Radio.TitleRadio;
 import com.example.ultim.radio5.RadioMessage;
@@ -25,6 +29,7 @@ import com.project.equalizerview.EqualizerView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.w3c.dom.Text;
 
 import java.util.Objects;
 
@@ -46,6 +51,10 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     int mState = PlaybackStateCompat.STATE_NONE;
     ProgressDialog progressDialog;
     RadioMessage radioMessage;
+
+    RelativeLayout previewLayout;
+    EqualizerView equalizerViewSmall;
+    TextView previewTitle;
 
     // TODO: Rename and change types of parameters
     private String universityName;
@@ -92,6 +101,19 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     }
 
     View initView(View rootView){
+        previewLayout = (RelativeLayout)rootView.findViewById(R.id.preview_layout);
+        previewLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), NavigationDrawerActivity.class);
+                getActivity().finish();
+                startActivity(i);
+
+            }
+        });
+        previewLayout.setVisibility(View.GONE);
+        equalizerViewSmall = (EqualizerView) rootView.findViewById(R.id.equalizerView_small) ;
+        previewTitle = (TextView) rootView.findViewById(R.id.preview_title);
         playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
         equalizerView = (EqualizerView) rootView.findViewById(R.id.equalaizer);
         //TODO: make invisible and not animate!!
@@ -213,8 +235,18 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         radioMessage = inputMessage;
         if (Objects.equals(inputMessage.getUniversityName(), universityName)) {
             mState = inputMessage.getState();
+            previewLayout.setVisibility(View.GONE);
+            equalizerViewSmall.stopBars();
         } else {
             mState = PlaybackStateCompat.STATE_NONE;
+            if (inputMessage.getState() != PlaybackStateCompat.STATE_STOPPED){
+                previewLayout.setVisibility(View.VISIBLE);
+                previewTitle.setText(inputMessage.getUniversityName());
+                equalizerViewSmall.animateBars();
+            } else {
+                previewLayout.setVisibility(View.GONE);
+                equalizerViewSmall.stopBars();
+            }
         }
 
         switch (mState) {
