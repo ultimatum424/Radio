@@ -117,6 +117,9 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 mMediaPlayer.pause();
             }
         }
+        if (mState == PlaybackStateCompat.STATE_BUFFERING){
+            stop();
+        }
         relaxResources(false);
         mState = PlaybackStateCompat.STATE_PAUSED;
         EventBus.getDefault().postSticky(new RadioMessage(mState, mCurrentTitle, mCurrentSource));

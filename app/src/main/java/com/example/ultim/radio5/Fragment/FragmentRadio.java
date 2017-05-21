@@ -170,7 +170,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         if (Objects.equals(radioMessage.getUniversityName(), universityName)) {
 
             if (mState == PlaybackStateCompat.STATE_PAUSED){
-                //EventBus.getDefault().post("start");
+               runService();
             }
 
             else if (mState != PlaybackStateCompat.STATE_STOPPED){
@@ -220,7 +220,7 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         switch (mState) {
             case PlaybackStateCompat.STATE_PAUSED:
                 playButtonImageView.setImageResource(R.drawable.play_button_selector);
-                equalizerView.animateBars();
+                equalizerView.stopBars();
                 equalizerView.setVisibility(View.INVISIBLE);
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
