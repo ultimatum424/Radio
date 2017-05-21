@@ -66,7 +66,8 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 Log.d("RadioPlayer", "Headphones disconnected.");
                 //TODO; ADD ACTION
-                //pause();
+                mContext.startService(new Intent(mContext, RadioPlayerService.class).setAction(RadioPlayerService.ACTION_PAUSE));
+               // pause();
             }
         }
     };
@@ -78,7 +79,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 Log.d("RadioPlayer", "Headphones connected.");
                 headsetConnected = true;
                 if (isPlaying()) {
-                    play(mCurrentSource, mCurrentTitle);
+                 //   play(mCurrentSource, mCurrentTitle);
                 }
             }
         }
