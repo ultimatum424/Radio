@@ -40,6 +40,7 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private volatile boolean mReceiversRegistered;
     private String mCurrentSource;
     private String mCurrentTitle;
+    private boolean headsetConnected = false;
 
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
@@ -49,6 +50,9 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
+    private final IntentFilter mAudioActionHeadsetPlugFilter =
+            new IntentFilter(AudioManager.ACTION_HEADSET_PLUG);
+
 
     private final BroadcastReceiver mAudioNoisyReceiver = new BroadcastReceiver() {
         @Override
@@ -56,6 +60,20 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 Log.d("RadioPlayer", "Headphones disconnected.");
                 //TODO; ADD ACTION
+                //pause();
+            }
+        }
+    };
+
+    private final BroadcastReceiver mAudioActionHeadsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!headsetConnected && intent.getIntExtra("state", 0) == 1) {
+                Log.d("RadioPlayer", "Headphones connected.");
+                headsetConnected = true;
+                if (isPlaying()) {
+                    play(mCurrentSource, mCurrentTitle);
+                }
             }
         }
     };
@@ -286,12 +304,14 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private void registerReceivers() {
         if (!mReceiversRegistered) {
             mContext.registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
+            mContext.registerReceiver(mAudioActionHeadsReceiver, mAudioActionHeadsetPlugFilter);
             mReceiversRegistered = true;
         }
     }
     private void unregisterReceivers() {
         if (mReceiversRegistered) {
             mContext.unregisterReceiver(mAudioNoisyReceiver);
+            mContext.unregisterReceiver(mAudioActionHeadsReceiver);
             mReceiversRegistered = false;
         }
     }
