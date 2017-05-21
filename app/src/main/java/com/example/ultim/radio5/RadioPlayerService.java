@@ -94,6 +94,7 @@ public class RadioPlayerService extends Service {
                 .setContentTitle( title )
                 .setContentText( url )
                 .setLargeIcon(largeIcon)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(pendingSelectIntent)
                 .setOngoing(true)
                 .setStyle(style);
