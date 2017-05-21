@@ -205,12 +205,12 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
             case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                 Log.e("RadioPlayer", "BUFFERING_1");
                 //stateRadio = BUFFERING;
-               // EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
+                EventBus.getDefault().postSticky(new RadioMessage(PlaybackStateCompat.STATE_BUFFERING, mCurrentTitle, mCurrentSource));
                 break;
             case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                 Log.e("RadioPlayer", "BUFFERING_0");
                 //stateRadio = PLAY;
-               // EventBus.getDefault().postSticky(new RadioStateEvent(stateRadio));
+                EventBus.getDefault().postSticky(new RadioMessage(mState, mCurrentTitle, mCurrentSource));
                 break;
         }
         return false;
