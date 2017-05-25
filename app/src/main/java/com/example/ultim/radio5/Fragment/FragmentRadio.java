@@ -112,7 +112,9 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
             }
         });
         previewLayout.setVisibility(View.GONE);
-        equalizerViewSmall = (EqualizerView) rootView.findViewById(R.id.equalizerView_small) ;
+        equalizerViewSmall = (EqualizerView) rootView.findViewById(R.id.equalizerView_small);
+        equalizerViewSmall.stopBars();
+        equalizerViewSmall.setVisibility(View.GONE);
         previewTitle = (TextView) rootView.findViewById(R.id.preview_title);
         playButtonImageView = (ImageView) rootView.findViewById(R.id.content_play_btn);
         equalizerView = (EqualizerView) rootView.findViewById(R.id.equalaizer);
@@ -153,13 +155,13 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
         super.onConfigurationChanged(newConfig);
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         populateViewForOrientation(inflater, (ViewGroup) getView());
+
     }
 
     private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
         viewGroup.removeAllViewsInLayout();
         View subview = initView(inflater.inflate(R.layout.fragment_radio, viewGroup));
         changeState(radioMessage);
-
     }
 
     @Override
