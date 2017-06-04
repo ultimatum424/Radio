@@ -36,6 +36,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile 'com.koushikdutta.ion:ion:2.+'
     testCompile 'junit:junit:4.12'
     compile project(path: ':equalizerview')
 }

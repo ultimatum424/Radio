@@ -3,6 +3,7 @@ package com.example.ultim.radio5;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -17,6 +18,9 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -164,6 +168,15 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 createMediaPlayerIfNeeded();
                 mState = PlaybackStateCompat.STATE_BUFFERING;
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                File file = new File(mContext.getFilesDir(), "Song_1");
+                if (file.exists()) {
+                    FileInputStream is = new FileInputStream(file);
+                    FileDescriptor fd = is.getFD();
+                    mMediaPlayer.setDataSource(fd);
+                    is.close();
+                } else {
+                    throw new IOException("setDataSource failed.");
+                }
                 mMediaPlayer.setDataSource(source);
                 mMediaPlayer.prepareAsync();
                 mWifiLock.acquire();
