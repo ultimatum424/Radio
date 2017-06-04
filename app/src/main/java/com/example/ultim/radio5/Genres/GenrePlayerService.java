@@ -22,7 +22,6 @@ import android.util.Log;
 import com.example.ultim.radio5.AppConstant;
 import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
-import com.example.ultim.radio5.RadioPlayer;
 
 public class GenrePlayerService extends Service {
     public static final String ACTION_PLAY = "action_play";
@@ -39,6 +38,8 @@ public class GenrePlayerService extends Service {
 
     private Uri uri;
     private String title;
+    private GenreItem genreItem;
+    private int currentSong = 0;
 
     @Override
     public IBinder onBind(Intent intent) {return null;}
@@ -50,6 +51,10 @@ public class GenrePlayerService extends Service {
         if (intent.getExtras() != null) {
             uri = intent.getData();
             title = intent.getStringExtra("title");
+            currentSong = intent.getIntExtra("num", currentSong);
+        }
+        if (genreItem == null){
+            genreItem = new GenreData(getApplicationContext()).findItemByTitle(title);
         }
         String action = intent.getAction();
         if( action.equalsIgnoreCase( ACTION_PLAY ) ) {
@@ -88,7 +93,7 @@ public class GenrePlayerService extends Service {
         mBuild = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_radio_black_24dp)
                 .setContentTitle( title )
-                //.setContentText( url )
+                .setContentText( genreItem.getList()[currentSong] )
                 .setLargeIcon(largeIcon)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(pendingSelectIntent)
@@ -99,7 +104,7 @@ public class GenrePlayerService extends Service {
         mBuild.addAction(generateAction(R.drawable.ic_close_black_16dp_2x, "Stop", ACTION_STOP));
         mBuild.addAction( generateAction( android.R.drawable.ic_media_previous, "Previous", ACTION_PREVIOUS ) );
         mBuild.addAction( generateAction( android.R.drawable.ic_media_next, "Next", ACTION_NEXT ) );
-        style.setShowActionsInCompactView(0, 1, 2, 3);
+        style.setShowActionsInCompactView(0);
 
         @SuppressLint("ServiceCast")
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -115,6 +120,7 @@ public class GenrePlayerService extends Service {
                 e.printStackTrace();
             }
         }
+
         if (mRadioPlayer == null){
             mRadioPlayer = new GenrePlayer(getApplicationContext());
         }
@@ -138,7 +144,7 @@ public class GenrePlayerService extends Service {
             public void onPlay() {
                 super.onPlay();
                 buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
-                mRadioPlayer.play(uri, title);
+                mRadioPlayer.play(Uri.parse(genreItem.getUrl(currentSong)), title, currentSong);
                 startForeground(1, mBuild.build());
             }
 
@@ -153,11 +159,26 @@ public class GenrePlayerService extends Service {
             @Override
             public void onSkipToNext() {
                 super.onSkipToNext();
+                if (currentSong < genreItem.getLength() - 1) {
+                    currentSong++;
+                    mRadioPlayer.play(Uri.parse(genreItem.getUrl(currentSong)), title, currentSong);
+                    buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+                }
+
             }
 
             @Override
             public void onSkipToPrevious() {
                 super.onSkipToPrevious();
+                if (currentSong > 0) {
+                    currentSong--;
+                    mRadioPlayer.play(Uri.parse(genreItem.getUrl(currentSong)), title, currentSong);
+                    buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+                } else {
+                    currentSong = 0;
+                    mRadioPlayer.play(Uri.parse(genreItem.getUrl(currentSong)), title, currentSong);
+                    buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ) );
+                }
             }
 
             @Override

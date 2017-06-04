@@ -42,7 +42,7 @@ public class GenrePlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     private volatile boolean mReceiversRegistered;
     private Uri mCurrentSource;
     private String mCurrentTitle;
-    private boolean headsetConnected = false;
+    private int mCurrentPlay;
 
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
@@ -104,7 +104,7 @@ public class GenrePlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        mContext.startService(new Intent(mContext, GenrePlayerService.class).setAction(GenrePlayerService.ACTION_NEXT));
     }
 
     @Override
@@ -131,7 +131,7 @@ public class GenrePlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
         }
         relaxResources(false);
         mState = PlaybackStateCompat.STATE_PAUSED;
-        EventBus.getDefault().postSticky(new GenreMessage(mState, mCurrentTitle, mCurrentSource));
+        EventBus.getDefault().postSticky(new GenreMessage(mState, mCurrentTitle, mCurrentSource, mCurrentPlay));
         unregisterReceivers();
     }
 
@@ -139,7 +139,7 @@ public class GenrePlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     public void stop() {
         mState = PlaybackStateCompat.STATE_STOPPED;
         unregisterReceivers();
-        EventBus.getDefault().postSticky(new GenreMessage(mState, mCurrentTitle, mCurrentSource));
+        EventBus.getDefault().postSticky(new GenreMessage(mState, mCurrentTitle, mCurrentSource, mCurrentPlay));
         giveUpAudioFocus();
         relaxResources(true);
     }
@@ -156,6 +156,12 @@ public class GenrePlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
 
     @Override
     public void play(Uri source, String title) {
+
+    }
+
+    @Override
+    public void play(Uri source, String title, int num) {
+        mCurrentPlay = num;
         mPlayOnFocusGain = true;
         mCurrentTitle = title;
         tryToGetAudioFocus();
@@ -224,7 +230,7 @@ public class GenrePlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 mState = PlaybackStateCompat.STATE_PLAYING;
             }
         }
-        EventBus.getDefault().postSticky(new GenreMessage(mState, mCurrentTitle, mCurrentSource));
+        EventBus.getDefault().postSticky(new GenreMessage(mState, mCurrentTitle, mCurrentSource, mCurrentPlay));
         mPlayOnFocusGain = false;
     }
 

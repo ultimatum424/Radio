@@ -188,6 +188,11 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
     }
 
     @Override
+    public void play(Uri source, String title, int num) {
+
+    }
+
+    @Override
     public int getState() {
         return mState;
     }

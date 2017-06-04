@@ -1,6 +1,9 @@
 package com.example.ultim.radio5.Fragment;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -50,11 +53,16 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private String mPlayListName;
     private OnFragmentInteractionListener mListener;
     private TextView mTextView;
+    private TextView mSongTitle;
     ProgressBar progressBar;
     private Button mButtonDownload;
     private Button mButtonPlay;
+    private Button mButtonNext;
+    private Button mButtonPreview;
     private GenreData genreData;
     private GenreMessage genreMessage;
+    private int currentPlay;
+
 
     boolean start;
 
@@ -91,10 +99,15 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         View v = inflater.inflate(R.layout.fragment_genre, container, false);
         mTextView = (TextView) v.findViewById(R.id.genre_fragment_playlist_info_textview);
         mTextView.setText("Playlist " + mPlayListName);
+        mSongTitle = (TextView) v.findViewById(R.id.song_title);
         mButtonDownload = (Button) v.findViewById(R.id.download_genre);
         mButtonDownload.setOnClickListener(this);
         mButtonPlay = (Button) v.findViewById(R.id.play_genre) ;
         mButtonPlay.setOnClickListener(this);
+        mButtonNext = (Button) v.findViewById(R.id.next_genre) ;
+        mButtonNext.setOnClickListener(this);
+        mButtonPreview = (Button) v.findViewById(R.id.prev_genre) ;
+        mButtonPreview.setOnClickListener(this);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         EventBus.getDefault().register(this);
         return v;
@@ -116,26 +129,36 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == mButtonDownload) {
-            DownloadFiles();
+
+            for (int i = 0; i < genreData.findItemByTitle(mPlayListName).getLength(); i++){
+                DownloadFiles(i);
+            }
         }
         else if (v == mButtonPlay)
         {
             StartStopGenre();
         }
+        else if (v == mButtonNext){
+            clickNext();
+        }
+        else if (v == mButtonPreview){
+            clickPreview();
+        }
     }
 
-    private void DownloadFiles() {
-        String url = genreData.findItemByTitle(mPlayListName).getUrl(0);
+    private void DownloadFiles(final int i) {
+        String url = genreData.findItemByTitle(mPlayListName).getUrl(i);
         downloading = Ion.with(getActivity())
                 .load(url)
                 .progressBar(progressBar)
                 .progressHandler(new ProgressCallback() {
                     @Override
                     public void onProgress(long downloaded, long total) {
-                        mTextView.setText("" + downloaded + " / " + total);
+                        //mTextView.setText("" + downloaded + " / " + total);
+                       // progressBar.setProgress((int) (30));
                     }
                 })
-                .write(getActivity().getFileStreamPath("genre" + mPlayListName + ".mp3"))
+                .write(getActivity().getFileStreamPath("genre" + mPlayListName + i + ".mp3"))
                 .setCallback(new FutureCallback<File>() {
                     @Override
                     public void onCompleted(Exception e, File result) {
@@ -144,43 +167,66 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
                             return;
                         }
                         Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
-                        genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result), 0);
+                        genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result), i);
                         genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
                         genreData.saveData();
                     }
                 });
     }
-    private void runGenre()
+
+    private void clickNext(){
+        if (genreMessage.getPlay() < genreData.findItemByTitle(mPlayListName).getLength() - 1){
+            runGenre(genreMessage.getPlay() + 1);
+        } else {
+            runGenre(0);
+
+        }
+    }
+
+    private void clickPreview(){
+        if (genreMessage.getPlay() >0){
+            runGenre(genreMessage.getPlay() - 1);
+        } else {
+            runGenre(0);
+        }
+    }
+
+    private void runGenre(int i)
     {
         TitleGenre.getInstance().setTitle(mPlayListName);
         Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_PLAY);
-        Uri uri = genreData.findItemByTitle(mPlayListName).getFilePatch(0);
+        Uri uri = genreData.findItemByTitle(mPlayListName).getFilePatch(i);
         intent.setData(uri);
         intent.putExtra("title", mPlayListName);
+        intent.putExtra("num", i);
+        mButtonPlay.setText("Pause");
+        mSongTitle.setText(genreData.findItemByTitle(mPlayListName).getList()[i]);
         getActivity().startService(intent);
     }
 
-    private void stopGenre()
-    {
-        Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_STOP);
+    private void stopGenre() {
+        Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_PAUSE);
+       // mSongTitle.setText(" ");
+        mButtonPlay.setText("Play");
         getActivity().startService(intent);
+
     }
 
    private void StartStopGenre()
    {
        if (Objects.equals(genreMessage.getGenreName(), mPlayListName)) {
            if (genreMessage.getState() == PlaybackStateCompat.STATE_PAUSED){
-               runGenre();
+               runGenre(genreMessage.getPlay());
            }
            else if (genreMessage.getState() != PlaybackStateCompat.STATE_STOPPED){
                stopGenre();
            }
            else {
-               runGenre();
+               runGenre(genreMessage.getPlay());
            }
        }
        else {
-           runGenre();
+           runGenre(0);
        }
    }
 
@@ -196,6 +242,22 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
 
     private void changeState(GenreMessage inputMessage) {
         genreMessage = inputMessage;
+        if (genreMessage.getState() != PlaybackState.STATE_PLAYING){
+            mButtonPlay.setText("Play");
+        }else {
+            mButtonPlay.setText("Pause");
+        }
+        mSongTitle.setText(genreData.findItemByTitle(genreMessage.getGenreName()).getList()[genreMessage.getPlay()]);
+    }
+
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if(GenrePlayerService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
