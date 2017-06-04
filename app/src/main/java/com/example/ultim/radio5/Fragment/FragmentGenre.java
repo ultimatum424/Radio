@@ -1,12 +1,10 @@
 package com.example.ultim.radio5.Fragment;
 
-import android.app.ProgressDialog;
-import android.graphics.Color;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +15,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ultim.radio5.Genres.GenreData;
-import com.example.ultim.radio5.NavigationDrawerActivity;
+import com.example.ultim.radio5.Genres.GenreMessage;
+import com.example.ultim.radio5.Genres.GenrePlayerService;
+import com.example.ultim.radio5.Genres.TitleGenre;
 import com.example.ultim.radio5.R;
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.Objects;
 
 
 /**
@@ -43,6 +44,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mPlayListName;
@@ -50,7 +52,11 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private TextView mTextView;
     ProgressBar progressBar;
     private Button mButtonDownload;
+    private Button mButtonPlay;
     private GenreData genreData;
+    private GenreMessage genreMessage;
+
+    boolean start;
 
     Future<File> downloading;
 
@@ -74,6 +80,9 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         }
         Ion.getDefault(getActivity()).configure().setLogging("ion-sample", Log.DEBUG);
         genreData = new GenreData(getActivity());
+        if (genreMessage == null) {
+            genreMessage = new GenreMessage();
+        }
     }
 
     @Override
@@ -84,7 +93,10 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         mTextView.setText("Playlist " + mPlayListName);
         mButtonDownload = (Button) v.findViewById(R.id.download_genre);
         mButtonDownload.setOnClickListener(this);
+        mButtonPlay = (Button) v.findViewById(R.id.play_genre) ;
+        mButtonPlay.setOnClickListener(this);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        EventBus.getDefault().register(this);
         return v;
     }
 
@@ -103,33 +115,91 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        downloading = Ion.with(getActivity())
-                .load(genreData.findItemByTitle(mPlayListName).getUrl())
-                //.load("https://downloader.disk.yandex.ru/disk/5e8fb36950e521398982b67596283aaf742276d2ffc4390c48d7d76e3e44e3c3/593434b8/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2")
-                .progressBar(progressBar)
-                .progressHandler(new ProgressCallback() {
-                    @Override
-                    public void onProgress(long downloaded, long total) {
-                        mTextView.setText("" + downloaded + " / " + total);
-                    }
-                })
-                .write(getActivity().getFileStreamPath("genre" + genreData.findItemByTitle(mPlayListName).getName() + ".mp3"))
-                .setCallback(new FutureCallback<File>() {
-                    @Override
-                    public void onCompleted(Exception e, File result) {
-                        if (e != null) {
-                            Toast.makeText(getActivity(), "Error downloading file", Toast.LENGTH_LONG).show();
-                            return;
+        if (v == mButtonDownload) {
+            String url = genreData.findItemByTitle(mPlayListName).getUrl();
+            downloading = Ion.with(getActivity())
+                    .load(url)
+                    .progressBar(progressBar)
+                    .progressHandler(new ProgressCallback() {
+                        @Override
+                        public void onProgress(long downloaded, long total) {
+                            mTextView.setText("" + downloaded + " / " + total);
                         }
-                        Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
-                        genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result));
-                        genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
-                    }
-                });
+                    })
+                    .write(getActivity().getFileStreamPath("genre" + genreData.findItemByTitle(mPlayListName).getName() + ".mp3"))
+                    .setCallback(new FutureCallback<File>() {
+                        @Override
+                        public void onCompleted(Exception e, File result) {
+                            if (e != null) {
+                                Toast.makeText(getActivity(), "Error downloading file", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
+                            genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result));
+                            genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
+                            genreData.saveData();
+                        }
+                    });
+        }
+        else if (v == mButtonPlay)
+        {
+            StartStopGenre();
+        }
     }
+
+    private void runGenre()
+    {
+        TitleGenre.getInstance().setTitle(mPlayListName);
+        Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_PLAY);
+        intent.setData(genreData.findItemByTitle(mPlayListName).getFilePatch());
+        intent.putExtra("title", mPlayListName);
+        getActivity().startService(intent);
+    }
+
+    private void stopGenre()
+    {
+        Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_STOP);
+        getActivity().startService(intent);
+    }
+
+   private void StartStopGenre()
+   {
+       if (Objects.equals(genreMessage.getGenreName(), mPlayListName)) {
+           if (genreMessage.getState() == PlaybackStateCompat.STATE_PAUSED){
+               runGenre();
+           }
+           else if (genreMessage.getState() != PlaybackStateCompat.STATE_STOPPED){
+               stopGenre();
+           }
+
+           else {
+               runGenre();
+           }
+           //restart Service
+       } else {
+           if (genreMessage.getState() != PlaybackStateCompat.STATE_STOPPED) {
+               runGenre();
+           }
+       }
+   }
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(GenreMessage genreMessage){
+        changeState( genreMessage);
+    }
+
+    private void changeState(GenreMessage inputMessage) {
+        genreMessage = inputMessage;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

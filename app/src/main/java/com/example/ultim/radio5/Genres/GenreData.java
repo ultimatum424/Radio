@@ -42,11 +42,11 @@ public class GenreData {
             items = gson.fromJson(jsonString, listType);
         } else {
             items.add(new GenreItem("Rock",
-                    "https://downloader.disk.yandex.ru/disk/5e8fb36950e521398982b67596283aaf742276d2ffc4390c48d7d76e3e44e3c3/593434b8/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
-                    new String[]{"rock1", "rock2"}, false));
+                    "https://downloader.disk.yandex.ru/disk/c135b0c63bc48e63503aa4870807bab89eeef68183da08b7ceb61ab129dfc648/593482b5/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
+                    null, new String[]{"rock1", "rock2"}, false));
             items.add(new GenreItem("Pop",
-                    "https://downloader.disk.yandex.ru/disk/5e8fb36950e521398982b67596283aaf742276d2ffc4390c48d7d76e3e44e3c3/593434b8/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
-                    new String[]{"pop1", "pop2"}, false));
+                    "https://downloader.disk.yandex.ru/disk/c135b0c63bc48e63503aa4870807bab89eeef68183da08b7ceb61ab129dfc648/593482b5/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
+                    null, new String[]{"pop1", "pop2"}, false));
         }
     }
 

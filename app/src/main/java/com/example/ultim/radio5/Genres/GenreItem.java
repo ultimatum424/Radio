@@ -11,13 +11,14 @@ public class GenreItem {
 
 
     String url;
-    Uri filePatch;
+    String filePatch;
     String list[];
 
-    public GenreItem(String name, String url, String list[], boolean downloadStatus) {
+    public GenreItem(String name, String url, String filePatch, String list[], boolean downloadStatus) {
         this.name = name;
         this.downloadStatus = downloadStatus;
         this.list = list;
+        this.filePatch = filePatch;
         this.length = list.length;
         this.url = url;
     }
@@ -61,10 +62,13 @@ public class GenreItem {
         this.list = list;
     }
 
-    public void setFilePatch(Uri filePatch) { this.filePatch = filePatch; }
+    public void setFilePatch(Uri filePatch) {
+
+        this.filePatch = filePatch.toString();
+    }
 
     public Uri getFilePatch(){
-        return this.filePatch;
+        return Uri.parse(this.filePatch);
     }
 
     public String getUrl() {
