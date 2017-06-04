@@ -125,7 +125,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     }
 
     private void DownloadFiles() {
-        String url = genreData.findItemByTitle(mPlayListName).getUrl();
+        String url = genreData.findItemByTitle(mPlayListName).getUrl(0);
         downloading = Ion.with(getActivity())
                 .load(url)
                 .progressBar(progressBar)
@@ -144,7 +144,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
                             return;
                         }
                         Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
-                        genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result));
+                        genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result), 0);
                         genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
                         genreData.saveData();
                     }
@@ -154,7 +154,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     {
         TitleGenre.getInstance().setTitle(mPlayListName);
         Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_PLAY);
-        Uri uri = genreData.findItemByTitle(mPlayListName).getFilePatch();
+        Uri uri = genreData.findItemByTitle(mPlayListName).getFilePatch(0);
         intent.setData(uri);
         intent.putExtra("title", mPlayListName);
         getActivity().startService(intent);

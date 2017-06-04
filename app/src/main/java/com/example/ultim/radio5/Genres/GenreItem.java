@@ -7,11 +7,11 @@ public class GenreItem {
     String name;
     boolean downloadStatus;
     int length;
-    String url;
-    String filePatch;
+    String url[];
+    String filePatch[];
     String list[];
 
-    public GenreItem(String name, String url, String filePatch, String list[], boolean downloadStatus) {
+    public GenreItem(String name, String url[], String filePatch[], String list[], boolean downloadStatus) {
         this.name = name;
         this.downloadStatus = downloadStatus;
         this.list = list;
@@ -59,20 +59,19 @@ public class GenreItem {
         this.list = list;
     }
 
-    public void setFilePatch(Uri filePatch) {
-
-        this.filePatch = filePatch.toString();
+    public void setFilePatch(Uri filePatch, int i) {
+        this.filePatch[i] = filePatch.toString();
     }
 
-    public Uri getFilePatch(){
-        return Uri.parse(this.filePatch);
+    public Uri getFilePatch(int i){
+        return Uri.parse(this.filePatch[i]);
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrl(int i) {
+        return url[i];
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrl(String url, int i) {
+        this.url[i] = url;
     }
 }
