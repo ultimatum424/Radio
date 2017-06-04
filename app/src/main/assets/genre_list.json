@@ -1,0 +1,22 @@
+[
+  {
+    "list": [
+      "rock1",
+      "rock2"
+    ],
+    "name": "Rock",
+    "url": "https://downloader.disk.yandex.ru/disk/ab3ccc56755234dbf45cb1758abd15f372a7cefe41cad3db471289ee5dbd5c33/5934af0b/2ZYp9T3l6i847xDAk9EPmWY7baQe1TaspfLJPrOTasaLgwn1FEVa68-xB7fCEPu2xaK9JsdorLzKBtKZZGgbsA%3D%3D?uid\u003d0\u0026filename\u003dThe%20Rasmus%20%E2%80%93%20Livin%20in%20a%20world%20without%20you.mp3\u0026disposition\u003dattachment\u0026hash\u003dB7cDPmiWpdv9JZs0hxoUsSh2L3m/NbBQn/ulkeD1A9c%3D%3A\u0026limit\u003d0\u0026content_type\u003daudio%2Fmpeg\u0026fsize\u003d3633704\u0026hid\u003d6fd29ea65314de52bfd37e8484033768\u0026media_type\u003daudio\u0026tknv\u003dv2",
+    "downloadStatus": false,
+    "length": 2
+  },
+  {
+    "list": [
+      "pop1",
+      "pop2"
+    ],
+    "name": "Pop",
+    "url": "https://downloader.disk.yandex.ru/disk/ebe0d3f0221bd96d988d0b6fc488590e04607c1c1743e553e35f958b3fcd7dc1/5934af0a/jJPoX3gFq-6KYd8Y9t4ng1h_WVU2i1shLHsJxoKKyBBSYasiT5ZkKJNFz7iA-dOwjT9vdYsc5srD963gJuHRQQ%3D%3D?uid\u003d0\u0026filename\u003dNickleBack%20%E2%80%93%20When%20We%20Stand%20Together.mp3\u0026disposition\u003dattachment\u0026hash\u003dmQIrf%2B5X34YmxmuXxpgwsRySAzgoD/jQigd7o/CMvGg%3D%3A\u0026limit\u003d0\u0026content_type\u003daudio%2Fmpeg\u0026fsize\u003d7692288\u0026hid\u003dfed047b001d0fbe4662a933edd9c2f37\u0026media_type\u003daudio\u0026tknv\u003dv2",
+    "downloadStatus": false,
+    "length": 2
+  }
+]

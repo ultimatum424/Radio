@@ -1,6 +1,7 @@
 package com.example.ultim.radio5.Genres;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -13,6 +14,9 @@ import com.example.ultim.radio5.Univesity.UniversityItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -40,13 +44,11 @@ public class GenreData {
         if (!Objects.equals(jsonString, "")){
             Type listType = new TypeToken<ArrayList<GenreItem>>(){}.getType();
             items = gson.fromJson(jsonString, listType);
-        } else {
-            items.add(new GenreItem("Rock",
-                    "https://downloader.disk.yandex.ru/disk/c135b0c63bc48e63503aa4870807bab89eeef68183da08b7ceb61ab129dfc648/593482b5/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
-                    null, new String[]{"rock1", "rock2"}, false));
-            items.add(new GenreItem("Pop",
-                    "https://downloader.disk.yandex.ru/disk/c135b0c63bc48e63503aa4870807bab89eeef68183da08b7ceb61ab129dfc648/593482b5/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
-                    null, new String[]{"pop1", "pop2"}, false));
+        } else
+            {
+                Type listType = new TypeToken<ArrayList<GenreItem>>(){}.getType();
+                items = gson.fromJson(loadFromAsset(), listType);
+
         }
     }
 
@@ -74,5 +76,29 @@ public class GenreData {
             }
         }
         return null;
+    }
+
+    private String loadFromAsset(){
+        String str = "";
+        try
+        {
+            AssetManager assetManager = context.getAssets();
+            InputStream in = assetManager.open("genre_list.json");
+            InputStreamReader isr = new InputStreamReader(in);
+            char [] inputBuffer = new char[100];
+
+            int charRead;
+            while((charRead = isr.read(inputBuffer))>0)
+            {
+                String readString = String.copyValueOf(inputBuffer,0,charRead);
+                str += readString;
+            }
+        }
+        catch(IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+
+        return str;
     }
 }

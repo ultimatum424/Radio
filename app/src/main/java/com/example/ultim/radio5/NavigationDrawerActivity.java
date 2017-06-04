@@ -178,7 +178,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         universityData.saveData();
-        genreData.saveData();
+       // genreData.saveData();
 
     }
 

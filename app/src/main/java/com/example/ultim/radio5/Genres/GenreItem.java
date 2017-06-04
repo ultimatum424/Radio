@@ -7,9 +7,6 @@ public class GenreItem {
     String name;
     boolean downloadStatus;
     int length;
-
-
-
     String url;
     String filePatch;
     String list[];

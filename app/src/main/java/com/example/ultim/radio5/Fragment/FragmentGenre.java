@@ -116,30 +116,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == mButtonDownload) {
-            String url = genreData.findItemByTitle(mPlayListName).getUrl();
-            downloading = Ion.with(getActivity())
-                    .load(url)
-                    .progressBar(progressBar)
-                    .progressHandler(new ProgressCallback() {
-                        @Override
-                        public void onProgress(long downloaded, long total) {
-                            mTextView.setText("" + downloaded + " / " + total);
-                        }
-                    })
-                    .write(getActivity().getFileStreamPath("genre" + genreData.findItemByTitle(mPlayListName).getName() + ".mp3"))
-                    .setCallback(new FutureCallback<File>() {
-                        @Override
-                        public void onCompleted(Exception e, File result) {
-                            if (e != null) {
-                                Toast.makeText(getActivity(), "Error downloading file", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                            Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
-                            genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result));
-                            genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
-                            genreData.saveData();
-                        }
-                    });
+            DownloadFiles();
         }
         else if (v == mButtonPlay)
         {
@@ -147,11 +124,38 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void DownloadFiles() {
+        String url = genreData.findItemByTitle(mPlayListName).getUrl();
+        downloading = Ion.with(getActivity())
+                .load(url)
+                .progressBar(progressBar)
+                .progressHandler(new ProgressCallback() {
+                    @Override
+                    public void onProgress(long downloaded, long total) {
+                        mTextView.setText("" + downloaded + " / " + total);
+                    }
+                })
+                .write(getActivity().getFileStreamPath("genre" + mPlayListName + ".mp3"))
+                .setCallback(new FutureCallback<File>() {
+                    @Override
+                    public void onCompleted(Exception e, File result) {
+                        if (e != null) {
+                            Toast.makeText(getActivity(), "Error downloading file", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
+                        genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result));
+                        genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
+                        genreData.saveData();
+                    }
+                });
+    }
     private void runGenre()
     {
         TitleGenre.getInstance().setTitle(mPlayListName);
         Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_PLAY);
-        intent.setData(genreData.findItemByTitle(mPlayListName).getFilePatch());
+        Uri uri = genreData.findItemByTitle(mPlayListName).getFilePatch();
+        intent.setData(uri);
         intent.putExtra("title", mPlayListName);
         getActivity().startService(intent);
     }
@@ -171,15 +175,12 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
            else if (genreMessage.getState() != PlaybackStateCompat.STATE_STOPPED){
                stopGenre();
            }
-
            else {
                runGenre();
            }
-           //restart Service
-       } else {
-           if (genreMessage.getState() != PlaybackStateCompat.STATE_STOPPED) {
-               runGenre();
-           }
+       }
+       else {
+           runGenre();
        }
    }
 
