@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Created by Ultim on 16.05.2017.
@@ -168,15 +170,6 @@ public class RadioPlayer implements IRadioPlayer, AudioManager.OnAudioFocusChang
                 createMediaPlayerIfNeeded();
                 mState = PlaybackStateCompat.STATE_BUFFERING;
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                File file = new File(mContext.getFilesDir(), "Song_1");
-                if (file.exists()) {
-                    FileInputStream is = new FileInputStream(file);
-                    FileDescriptor fd = is.getFD();
-                    mMediaPlayer.setDataSource(fd);
-                    is.close();
-                } else {
-                    throw new IOException("setDataSource failed.");
-                }
                 mMediaPlayer.setDataSource(source);
                 mMediaPlayer.prepareAsync();
                 mWifiLock.acquire();

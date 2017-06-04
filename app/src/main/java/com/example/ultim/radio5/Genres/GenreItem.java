@@ -1,17 +1,25 @@
 package com.example.ultim.radio5.Genres;
 
 
+import android.net.Uri;
+
 public class GenreItem {
     String name;
     boolean downloadStatus;
     int length;
+
+
+
+    String url;
+    Uri filePatch;
     String list[];
 
-    public GenreItem(String name, String list[], boolean downloadStatus) {
+    public GenreItem(String name, String url, String list[], boolean downloadStatus) {
         this.name = name;
         this.downloadStatus = downloadStatus;
         this.list = list;
         this.length = list.length;
+        this.url = url;
     }
 
     public GenreItem(String name, boolean downloadStatus) {
@@ -51,5 +59,19 @@ public class GenreItem {
 
     public void setList(String[] list) {
         this.list = list;
+    }
+
+    public void setFilePatch(Uri filePatch) { this.filePatch = filePatch; }
+
+    public Uri getFilePatch(){
+        return this.filePatch;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

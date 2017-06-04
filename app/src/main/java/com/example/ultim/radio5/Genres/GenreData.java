@@ -36,19 +36,23 @@ public class GenreData {
 
     public void loadData() {
         //TODO: вставить нужное название файла для жанров и раскомментить
-        /*String jsonString = fileManager.openFile(AppConstant.FILE_STATIONS);
+        String jsonString = fileManager.openFile(AppConstant.FILE_GENRE);
         if (!Objects.equals(jsonString, "")){
             Type listType = new TypeToken<ArrayList<GenreItem>>(){}.getType();
             items = gson.fromJson(jsonString, listType);
-        } else*/ {
-            items.add(new GenreItem("Rock", new String[]{"rock1", "rock2"}, false));
-            items.add(new GenreItem("Pop", new String[]{"pop1", "pop2"}, false));
+        } else {
+            items.add(new GenreItem("Rock",
+                    "https://downloader.disk.yandex.ru/disk/5e8fb36950e521398982b67596283aaf742276d2ffc4390c48d7d76e3e44e3c3/593434b8/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
+                    new String[]{"rock1", "rock2"}, false));
+            items.add(new GenreItem("Pop",
+                    "https://downloader.disk.yandex.ru/disk/5e8fb36950e521398982b67596283aaf742276d2ffc4390c48d7d76e3e44e3c3/593434b8/AhqCbS4YLYWsy1JxRIDicPWE2ERwApl6bR8JOj2ZEhOg4lVjjOlpi4WPpT6bGZaoNY5DiKGETHBXfxcHrfJ9EQ%3D%3D?uid=0&filename=moby_-_extreme_ways_%28zvukoff.ru%29.mp3&disposition=attachment&hash=VmUiODl0hcGP7j5KDDzO7cEsmd8Ecec8d/vhf1l7bec%3D%3A&limit=0&content_type=audio%2Fmpeg&fsize=3808488&hid=c443be5b1e9331a1a5d99a2e7982bc7a&media_type=audio&tknv=v2",
+                    new String[]{"pop1", "pop2"}, false));
         }
     }
 
     public void saveData() {
         String jsonString  = gson.toJson(items);
-        fileManager.saveFile(jsonString, AppConstant.FILE_STATIONS);
+        fileManager.saveFile(jsonString, AppConstant.FILE_GENRE);
     }
 
     public boolean isSearchViewNeeded() {
