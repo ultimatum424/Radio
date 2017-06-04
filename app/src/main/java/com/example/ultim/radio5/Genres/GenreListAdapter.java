@@ -52,30 +52,30 @@ public class GenreListAdapter extends BaseAdapter {
         TextView textView = (TextView) view.findViewById(R.id.genre_list_item_text);
         ImageView imageView = (ImageView) view.findViewById(R.id.genre_list_item_image);
         textView.setText(currentItem.getName());
-        changeImageViewSrc(imageView, currentItem.isSelected);
+        changeImageViewSrc(imageView, currentItem.downloadStatus);
 
         return view;
     }
 
     private void changeImageViewSrc(ImageView imageView, boolean newState) {
-        imageView.setImageResource(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
+        imageView.setImageResource(newState ? R.drawable.ic_cloud_done_24dp : R.drawable.ic_cloud_queue_24dp);
         //imageView.setTag(newState ? R.mipmap.ic_star_filled : R.mipmap.ic_star_border);
     }
 
     public void onItemSelect(int position) {
         GenreItem item = genreItems.get(position);
-        item.changeSelectedStatus();
-        sortGenres();
+        //item.changeSelectedStatus();
+        //sortGenres();
     }
 
     private void sortGenres() {
         Collections.sort(genreItems, new Comparator<GenreItem>() {
             @Override
             public int compare(GenreItem o1, GenreItem o2) {
-                if (o1.isSelected() == o2.isSelected()) {
+                if (o1.isDownloadStatus() == o2.isDownloadStatus()) {
                     return o1.getName().compareToIgnoreCase(o2.getName());
                 } else {
-                    return o1.isSelected() ? -1 : 1;
+                    return o1.isDownloadStatus() ? -1 : 1;
                 }
             }
         });

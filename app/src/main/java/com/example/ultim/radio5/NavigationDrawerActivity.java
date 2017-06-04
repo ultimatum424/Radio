@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.example.ultim.radio5.Fragment.FragmentGreetings;
 import com.example.ultim.radio5.Fragment.FragmentRadio;
 import com.example.ultim.radio5.Fragment.FragmentGenre;
+import com.example.ultim.radio5.Genres.GenreData;
 import com.example.ultim.radio5.Genres.GenreItem;
 import com.example.ultim.radio5.Genres.GenreListAdapter;
 import com.example.ultim.radio5.Radio.TitleRadio;
@@ -60,7 +61,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
     GenreListAdapter genreListAdapter;
     UniversityListAdapter universityListAdapter;
     UniversityData universityData;
-    ArrayList<GenreItem> musicGenres;  //жанры музыки
+    //ArrayList<GenreItem> musicGenres;  //жанры музыки
+    GenreData genreData;
 
     Toolbar initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -108,13 +110,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
     void initOfflineContent(){
         offlineContent = (LinearLayout) findViewById(R.id.offline_content);
-        musicGenres = new ArrayList<GenreItem>();
-        musicGenres.add(new GenreItem("Rock"));
-        musicGenres.add(new GenreItem("Pop"));
-        musicGenres.add(new GenreItem("Jazz"));
-
+        genreData = new GenreData(this.getApplicationContext());
         genreListView = (ListView) findViewById(R.id.genre_list_view);
-        genreListAdapter = new GenreListAdapter(musicGenres, this);
+        genreListAdapter = new GenreListAdapter(genreData.getItems(), this);
         genreListView.setAdapter(genreListAdapter);
         genreListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -218,13 +216,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private void onGenreSelect(int position) {
         genreListAdapter.onItemSelect(position);
 
-        Fragment fragment = new FragmentGenre();
+        Fragment fragment = FragmentGenre.newInstance(genreData.getItems().get(position).getName());
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.content_container, fragment);
         ft.commit();
 
         genreListAdapter.notifyDataSetChanged();
+        drawer.closeDrawers();
     }
 
     private void onUniversitySelect(int position) {

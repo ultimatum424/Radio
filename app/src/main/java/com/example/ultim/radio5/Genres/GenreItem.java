@@ -3,29 +3,53 @@ package com.example.ultim.radio5.Genres;
 
 public class GenreItem {
     String name;
-    boolean isSelected;
+    boolean downloadStatus;
+    int length;
+    String list[];
 
-    public GenreItem(String name) {
+    public GenreItem(String name, String list[], boolean downloadStatus) {
         this.name = name;
-        this.isSelected = false;
+        this.downloadStatus = downloadStatus;
+        this.list = list;
+        this.length = list.length;
     }
 
-    public GenreItem(String name, boolean isSelected) {
+    public GenreItem(String name, boolean downloadStatus) {
         this.name = name;
     }
 
-    public boolean isSelected() {
-        return isSelected;
+    public boolean isDownloadStatus() {
+        return downloadStatus;
     }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
+    public void setDownloadStatus(boolean downloadStatus) {
+        this.downloadStatus = downloadStatus;
     }
     public void changeSelectedStatus() {
-        isSelected = !isSelected;
+        downloadStatus = !downloadStatus;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public String[] getList() {
+        return list;
+    }
+
+    public void setList(String[] list) {
+        this.list = list;
     }
 }
