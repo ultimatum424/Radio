@@ -1,0 +1,147 @@
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="90"
+    android:toDegrees="90">
+    <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+        -1-
+        <item>
+            <shape android:shape="rectangle" >
+                <solid android:color="#e9ebea"/>
+            </shape>
+        </item>
+
+        -2-
+        <item android:left="19dp" >
+            <shape android:shape="rectangle" >
+                <solid android:color="#e9ebea"/>
+            </shape>
+        </item>
+
+        -3-
+        <item android:left="38dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#e3e5e4"/>
+            </shape>
+        </item>
+
+        -4-
+        <item android:left="57dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#e3e5e4"/>
+            </shape>
+        </item>
+
+        -5-
+        <item android:left="76dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#dcdedd"/>
+            </shape>
+        </item>
+
+        -6-
+        <item android:left="95dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#dcdedd"/>
+            </shape>
+        </item>
+
+        -7-
+        <item android:left="114dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#d6d8d7"/>
+            </shape>
+        </item>
+
+        -8-
+        <item android:left="133dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#d0d2d1"/>
+            </shape>
+        </item>
+
+        -9-
+        <item android:left="152dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#c9cbca"/>
+            </shape>
+        </item>
+
+        -10-
+        <item android:left="171dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#c3c5c4"/>
+            </shape>
+        </item>
+
+        -11-
+        <item android:left="190dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#bdbfbe"/>
+            </shape>
+        </item>
+
+        -12-
+        <item android:left="209dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#b6b8b7"/>
+            </shape>
+        </item>
+
+        -13-
+        <item android:left="228dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#b0b2b1"/>
+            </shape>
+        </item>
+
+        -14-
+        <item android:left="247dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#aaacab"/>
+            </shape>
+        </item>
+
+        -15-
+        <item android:left="266dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#a3a5a4"/>
+            </shape>
+        </item>
+
+        -16-
+        <item android:left="285dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#9d9f9e"/>
+            </shape>
+        </item>
+
+        -17-
+        <item android:left="304dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#9a9b9b"/>
+            </shape>
+        </item>
+
+        -18-
+        <item android:left="323dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#919292"/>
+            </shape>
+        </item>
+
+        -19-
+        <item android:left="342dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#898989"/>
+            </shape>
+        </item>
+
+        -20-
+        <item android:left="361dp">
+            <shape android:shape="rectangle" >
+                <solid android:color="#808080"/>
+            </shape>
+        </item>
+
+
+    </layer-list>
+</rotate>

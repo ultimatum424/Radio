@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.session.MediaSessionManager;
+import android.media.session.PlaybackState;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -129,8 +132,14 @@ public class RadioPlayerService extends Service {
 
     private void initMediaSessions() throws RemoteException {
         mSession = new MediaSessionCompat(getApplicationContext(), "simple player session");
+        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackState.ACTION_PLAY    | PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_PAUSE)
+                .build();
+        mSession.setPlaybackState(state);
         mController = new MediaControllerCompat(getApplicationContext(), mSession.getSessionToken());
-
         mSession.setCallback(new MediaSessionCompat.Callback() {
 
             @Override
@@ -164,7 +173,7 @@ public class RadioPlayerService extends Service {
                 stopService( intent );
             }
         });
-
+        mSession.setActive(true);
     }
 
     public String getUrl() {
