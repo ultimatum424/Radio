@@ -2,6 +2,7 @@ package com.example.ultim.radio5.Fragment;
 
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.ultim.radio5.Genres.GenrePlayerService;
 import com.example.ultim.radio5.NavigationDrawerActivity;
 import com.example.ultim.radio5.R;
 import com.example.ultim.radio5.Radio.TitleRadio;
@@ -191,6 +193,10 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     }
 
     private void startStopRadio() {
+        if (isServiceRunning()){
+            Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_STOP);
+            getActivity().startService(intent);
+        }
         if (Objects.equals(radioMessage.getUniversityName(), universityName)) {
 
             if (mState == PlaybackStateCompat.STATE_PAUSED){
@@ -291,6 +297,16 @@ public class FragmentRadio extends Fragment implements View.OnClickListener {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(RadioMessage radioMessage){
         changeState( radioMessage);
+    }
+
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if(GenrePlayerService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

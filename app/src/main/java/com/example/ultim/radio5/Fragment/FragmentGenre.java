@@ -23,6 +23,7 @@ import com.example.ultim.radio5.Genres.GenreMessage;
 import com.example.ultim.radio5.Genres.GenrePlayerService;
 import com.example.ultim.radio5.Genres.TitleGenre;
 import com.example.ultim.radio5.R;
+import com.example.ultim.radio5.RadioPlayerService;
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -232,6 +233,10 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
 
    private void StartStopGenre()
    {
+       if(isServiceRunning()){
+           Intent intent = new Intent(getActivity(), RadioPlayerService.class).setAction(RadioPlayerService.ACTION_STOP);
+           getActivity().startService(intent);
+       }
        if (Objects.equals(genreMessage.getGenreName(), mPlayListName)) {
            if (genreMessage.getState() == PlaybackStateCompat.STATE_PAUSED){
                runGenre(genreMessage.getPlay());
@@ -271,7 +276,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private boolean isServiceRunning() {
         ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
-            if(GenrePlayerService.class.getName().equals(service.service.getClassName())) {
+            if(RadioPlayerService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
