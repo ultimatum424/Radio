@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,9 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     // TODO: Rename and change types of parameters
     private String mPlayListName;
     private OnFragmentInteractionListener mListener;
+
+    private LinearLayout downloadLayout;
+    private LinearLayout playLayout;
     private TextView mTextView;
     private TextView mSongTitle;
     ProgressBar progressBar;
@@ -64,7 +68,6 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private int currentPlay;
 
 
-    boolean start;
 
     Future<File> downloading;
 
@@ -97,6 +100,8 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_genre, container, false);
+        downloadLayout = (LinearLayout) v.findViewById(R.id.download_layout);
+        playLayout = (LinearLayout) v.findViewById(R.id.play_layout);
         mTextView = (TextView) v.findViewById(R.id.genre_fragment_playlist_info_textview);
         mTextView.setText("Playlist " + mPlayListName);
         mSongTitle = (TextView) v.findViewById(R.id.song_title);
@@ -110,6 +115,14 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         mButtonPreview.setOnClickListener(this);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         EventBus.getDefault().register(this);
+
+        if (genreData.findItemByTitle(mPlayListName).isDownloadStatus()){
+            playLayout.setVisibility(View.VISIBLE);
+            downloadLayout.setVisibility(View.GONE);
+        } else {
+            playLayout.setVisibility(View.GONE);
+            downloadLayout.setVisibility(View.VISIBLE);
+        }
         return v;
     }
 
@@ -166,10 +179,15 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
                             Toast.makeText(getActivity(), "Error downloading file", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
+
                         genreData.findItemByTitle(mPlayListName).setFilePatch(Uri.fromFile(result), i);
                         genreData.findItemByTitle(mPlayListName).setDownloadStatus(true);
                         genreData.saveData();
+                        if (i == genreData.findItemByTitle(mPlayListName).getLength() - 1){
+                            Toast.makeText(getActivity(), "File upload complete", Toast.LENGTH_LONG).show();
+                            playLayout.setVisibility(View.VISIBLE);
+                            downloadLayout.setVisibility(View.GONE);
+                        }
                     }
                 });
     }

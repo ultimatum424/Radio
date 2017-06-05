@@ -38,7 +38,7 @@
         android:orientation="vertical"
         android:padding="5sp"
         android:gravity="center_horizontal"
-        android:id="@+id/linearLayout2"
+        android:id="@+id/download_layout"
         android:layout_below="@+id/genre_fragment_playlist_info_textview"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -61,7 +61,7 @@
             android:id="@+id/song_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/linearLayout2"
+            android:layout_below="@+id/download_layout"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:textColor="@color/colorAccent"
@@ -77,7 +77,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:id="@+id/relativeLayout">
+            android:id="@+id/play_layout">
 
             <Button
                 android:id="@+id/prev_genre"
