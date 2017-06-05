@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -61,9 +62,9 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private TextView mSongTitle;
     ProgressBar progressBar;
     private Button mButtonDownload;
-    private Button mButtonPlay;
-    private Button mButtonNext;
-    private Button mButtonPreview;
+    private ImageView mButtonPlay;
+    private ImageView mButtonNext;
+    private ImageView mButtonPreview;
     private GenreData genreData;
     private GenreMessage genreMessage;
     private int currentPlay;
@@ -108,11 +109,11 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         mSongTitle = (TextView) v.findViewById(R.id.song_title);
         mButtonDownload = (Button) v.findViewById(R.id.download_genre);
         mButtonDownload.setOnClickListener(this);
-        mButtonPlay = (Button) v.findViewById(R.id.play_genre) ;
+        mButtonPlay = (ImageView) v.findViewById(R.id.play_genre) ;
         mButtonPlay.setOnClickListener(this);
-        mButtonNext = (Button) v.findViewById(R.id.next_genre) ;
+        mButtonNext = (ImageView) v.findViewById(R.id.next_genre) ;
         mButtonNext.setOnClickListener(this);
-        mButtonPreview = (Button) v.findViewById(R.id.prev_genre) ;
+        mButtonPreview = (ImageView) v.findViewById(R.id.prev_genre) ;
         mButtonPreview.setOnClickListener(this);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         EventBus.getDefault().register(this);
@@ -218,7 +219,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
         intent.setData(uri);
         intent.putExtra("title", mPlayListName);
         intent.putExtra("num", i);
-        mButtonPlay.setText("Pause");
+        mButtonPlay.setImageResource(R.drawable.ic_action_pause);
         mSongTitle.setText(genreData.findItemByTitle(mPlayListName).getList()[i]);
         getActivity().startService(intent);
     }
@@ -226,7 +227,7 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private void stopGenre() {
         Intent intent = new Intent(getActivity(), GenrePlayerService.class).setAction(GenrePlayerService.ACTION_PAUSE);
        // mSongTitle.setText(" ");
-        mButtonPlay.setText("Play");
+        mButtonPlay.setImageResource(R.drawable.ic_action_play);
         getActivity().startService(intent);
 
     }
@@ -266,9 +267,9 @@ public class FragmentGenre extends Fragment implements View.OnClickListener {
     private void changeState(GenreMessage inputMessage) {
         genreMessage = inputMessage;
         if (genreMessage.getState() != PlaybackState.STATE_PLAYING){
-            mButtonPlay.setText("Play");
+            mButtonPlay.setImageResource(R.drawable.ic_action_play);
         }else {
-            mButtonPlay.setText("Pause");
+            mButtonPlay.setImageResource(R.drawable.ic_action_pause);
         }
         mSongTitle.setText(genreData.findItemByTitle(genreMessage.getGenreName()).getList()[genreMessage.getPlay()]);
     }

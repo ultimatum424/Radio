@@ -79,25 +79,28 @@
             android:layout_alignParentStart="true"
             android:id="@+id/play_layout">
 
-            <Button
+            <ImageView
+                android:src="@drawable/ic_action_prev"
                 android:id="@+id/prev_genre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10sp"
+                android:padding="15sp"
                 android:text="preview" />
 
-            <Button
+            <ImageView
+                android:src="@drawable/ic_action_play"
                 android:id="@+id/play_genre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10sp"
+                android:padding="15sp"
                 android:text="play" />
 
-            <Button
+            <ImageView
+                android:src="@drawable/ic_action_next"
                 android:id="@+id/next_genre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10sp"
+                android:padding="15sp"
                 android:text="next" />
 
 
